@@ -6,6 +6,7 @@ import view.IV2MAdapter;
 import view.View;
 
 import java.awt.*;
+import java.io.File;
 
 /**
  * Created by JD Porterfield on 12/18/2014.
@@ -34,7 +35,9 @@ public class Controller {
         });
 
         view = new View(new IV2MAdapter() {
-
+            public void setMessageFile(File file) {
+                model.setMessageFile(file);
+            }
         });
     }
 

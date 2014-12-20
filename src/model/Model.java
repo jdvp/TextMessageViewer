@@ -1,5 +1,7 @@
 package model;
 
+import java.io.File;
+
 /**
  * Created by JD Porterfield on 12/18/2014.
  */
@@ -12,6 +14,10 @@ public class Model {
     }
 
     public void start(){
+
+    }
+
+    public void setMessageFile(File file) {
 
     }
 }
