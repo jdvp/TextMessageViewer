@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.Time;
 import java.util.Date;
 
 /**
@@ -10,13 +9,11 @@ public class Message {
 
     private String text;
     private Date date;
-    private Time time;
-    private int mode;
+    private int mode; // 0 if in 1 if out
 
-    public Message(String textIn, Date dateIn, Time timeIn, int modeIn) {
+    public Message(String textIn, Date dateIn, int modeIn) {
         text = textIn;
         date = dateIn;
-        time = timeIn;
         mode = modeIn;
     }
 
@@ -26,10 +23,6 @@ public class Message {
 
     public Date getDate () {
         return date;
-    }
-
-    public Time getTime() {
-        return time;
     }
 
     public int getMode() {
