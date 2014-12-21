@@ -71,8 +71,7 @@ public class Model {
                 contacts.add(newContact);
             }
         }
-        for(Contact c : contacts){
-            c.printMessagesToConsole();
-        }
+
+        view.addPeople(contacts);
     }
 }

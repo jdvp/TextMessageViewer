@@ -1,5 +1,6 @@
 package controller;
 
+import model.Contact;
 import model.IM2VAdapter;
 import model.Model;
 import view.IV2MAdapter;
@@ -7,6 +8,7 @@ import view.View;
 
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by JD Porterfield on 12/18/2014.
@@ -31,7 +33,9 @@ public class Controller {
 
     public Controller() {
         model = new Model(new IM2VAdapter() {
-
+            public void addPeople(ArrayList<Contact> contacts) {
+                view.addPeople(contacts);
+            }
         });
 
         view = new View(new IV2MAdapter() {

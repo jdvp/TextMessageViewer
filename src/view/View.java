@@ -1,11 +1,14 @@
 package view;
 
+import model.Contact;
+import model.Message;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Scanner;
+import java.util.ArrayList;
 
 /**
  * Created by JD Porterfield on 12/18/2014.
@@ -51,9 +54,36 @@ public class View extends JFrame {
         contactPanel.add(lblContacts);
 
         JScrollPane scroll1 = new JScrollPane();
-        getContentPane().add(scroll1, BorderLayout.CENTER);
 
         messagePanel = new JPanel();
+        messagePanel.setLayout(new BoxLayout(messagePanel,BoxLayout.Y_AXIS));
+
         scroll1.setViewportView(messagePanel);
+        getContentPane().add(scroll1, BorderLayout.CENTER);
+    }
+
+    public void addPeople(ArrayList<Contact> contacts) {
+        for(final Contact c: contacts){
+            JButton contactButton = new JButton(c.getName());
+            contactButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    messagePanel.removeAll();
+                    for(Message m: c.getMessages()){
+                        JLabel a = new JLabel(m.getText());
+                        if(m.getMode()==0){
+                            a.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                        }
+                        else {
+                            a.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        }
+                        System.out.println(m.getText());
+                        messagePanel.add(a);
+                    }
+                    messagePanel.validate();
+                }
+            });
+            contactPanel.add(contactButton);
+            getContentPane().validate();
+        }
     }
 }
