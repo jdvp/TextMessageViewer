@@ -72,9 +72,13 @@ public class TextMessagePanel extends JPanel{
         add(area);
     }
 
+    /**
+     * Adds the date to the current TextMessagePanel
+     */
     private void addDate(){
         JLabel dateLabel = new JLabel(myMessage.getDate().toString());
         dateLabel.setAlignmentX(area.getAlignmentX());
+        dateLabel.setFont(new Font("Times New Roman", Font.PLAIN, 10));
         add(dateLabel);
     }
 

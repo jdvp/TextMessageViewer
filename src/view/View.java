@@ -125,7 +125,6 @@ public class View extends JFrame {
                         else
                             textMessage.setAlignmentX(RIGHT_ALIGNMENT);
                         messagePanel.add(textMessage);
-                        contactPanel.setPreferredSize(contactPanel.getPreferredSize());
                         getContentPane().validate();
                     }
                     messagePanel.validate();
@@ -133,7 +132,6 @@ public class View extends JFrame {
             });
             contactPanel.add(contactButton);
         }
-        contactPanel.setMinimumSize(contactPanel.getPreferredSize());
         getContentPane().validate();
     }
 }
