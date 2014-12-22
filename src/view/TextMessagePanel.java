@@ -39,12 +39,16 @@ public class TextMessagePanel extends JPanel{
      */
     private void addPerson() {
         JLabel nameLabel;
-        if(myMessage.getMode() == Message.INBOUND_MESSAGE)
+        if(myMessage.getMode() == Message.INBOUND_MESSAGE) {
             nameLabel = new JLabel(myMessage.getUser());
-        else
+            nameLabel.setAlignmentX(LEFT_ALIGNMENT);
+        }
+        else {
             nameLabel = new JLabel("You");
-        nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-        add(nameLabel);
+            nameLabel.setAlignmentX(RIGHT_ALIGNMENT);
+        }
+        if(!(myMessage.getPreviousMessage().getMode() == myMessage.getMode()))
+            add(nameLabel);
     }
 
     /**

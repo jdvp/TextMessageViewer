@@ -27,6 +27,7 @@ public class View extends JFrame {
     private JButton fileChooser;
     private JLabel lblContacts;
     private Dimension defaultMessagePaneSize;
+    private Dimension defaultContactPaneSize;
 
     /**
      * The constructor for a View object.
@@ -89,6 +90,7 @@ public class View extends JFrame {
 
         scroll1.setViewportView(messagePanel);
         getContentPane().add(scroll1);
+        defaultContactPaneSize = contactPanel.getSize();
         defaultMessagePaneSize = messagePanel.getSize();
     }
 
@@ -102,6 +104,7 @@ public class View extends JFrame {
     public void addPeople(ArrayList<Contact> contacts) {
         System.out.println("CALL TO ADDPEOPLE");
         messagePanel.setSize(defaultMessagePaneSize);
+        contactPanel.setSize(defaultContactPaneSize);
         messagePanel.removeAll();
         contactPanel.removeAll();
         contactPanel.repaint();

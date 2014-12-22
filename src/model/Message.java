@@ -17,6 +17,7 @@ public class Message {
     private Date date;
     private int mode; // 0 if in 1 if out
     private String user;
+    private Message previousMessage = null;
 
     public static final int OUTBOUND_MESSAGE = 1;
     public static final int INBOUND_MESSAGE = 0;
@@ -61,4 +62,20 @@ public class Message {
      * @return the name of the user associated with this message
      */
     public String getUser(){return user; }
+
+    /**
+     * Sets the predecessor message to this one
+     *
+     * @param message This message's predecessor
+     */
+    public void setPreviousMessage(Message message) {
+        previousMessage = message;
+    }
+
+    /**
+     * @return This message's predecessor
+     */
+    public Message getPreviousMessage() {
+        return previousMessage;
+    }
 }

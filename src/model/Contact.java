@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * This is a contact. A contact has a name and number
@@ -61,7 +62,12 @@ public class Contact {
      * @param messageIn the new message to append
      */
     public void addMessage(Message messageIn) {
+        if(messages.size()>0)
+            messageIn.setPreviousMessage(messages.get(messages.size()-1));
+        else
+            messageIn.setPreviousMessage(new Message("null", new Date(0), 3, "null"));
         messages.add(messageIn);
+
     }
 
     /**
