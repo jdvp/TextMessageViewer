@@ -7,7 +7,13 @@ import java.util.Date;
 import java.util.Scanner;
 
 /**
- * Created by JD Porterfield on 12/18/2014.
+ * This is the Model of the system.
+ * It is responsible for parsing the input file into
+ * the appropriate message and contact objects,
+ * and storing these objects.
+ *
+ * @author JD Porterfield
+ * @date 12/18/2014
  */
 public class Model {
 
@@ -18,10 +24,23 @@ public class Model {
         view = adptIn;
     }
 
-    public void start(){
+    /**
+     * This is a no-op.
+     * We can't start the model without input from
+     * the view, since we don't yet have any SMS stores.
+     */
+    public void start(){}
 
-    }
-
+    /**
+     * Parses the input XML file and turns each appropriate
+     * line in the file into a Message object according to
+     * what the line specifies. Further, these messages are
+     * stored to the proper Contact object.
+     * Lastly, the view is called upon to display the processed
+     * result.
+     *
+     * @param file The XML file to process
+     */
     public void setMessageFile(File file) {
         Scanner fileReader = null;
         try {

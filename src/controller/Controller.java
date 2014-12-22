@@ -11,13 +11,24 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Created by JD Porterfield on 12/18/2014.
+ * This is the controller of the system.
+ * It is responsible for creating the model and view
+ * and dictating the behavior of the adapters between
+ * them.
+ *
+ * @author JD Porterfield
+ * @date 12/18/2014
  */
 public class Controller {
 
     Model model = new Model(IM2VAdapter.NULL_ADAPTER);
     View view = new View(IV2MAdapter.NULL_ADAPTER);
 
+    /**
+     * Creates and starts a Controller object
+     *
+     * @param args
+     */
     public static void main(String args[]) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -31,6 +42,10 @@ public class Controller {
         });
     }
 
+    /**
+     * The constructor of a Controller object.
+     * Creates the model and view and their associated adapters.
+     */
     public Controller() {
         model = new Model(new IM2VAdapter() {
             public void addPeople(ArrayList<Contact> contacts) {
@@ -45,6 +60,9 @@ public class Controller {
         });
     }
 
+    /**
+     * Starts the model and the view
+     */
     public void start() {
         model.start();
         view.start();
