@@ -42,6 +42,7 @@ public class Model {
      * @param file The XML file to process
      */
     public void setMessageFile(File file) {
+        contacts = new ArrayList<Contact>();
         Scanner fileReader = null;
         try {
             fileReader = new Scanner(file);
@@ -75,7 +76,7 @@ public class Model {
             String name = line.substring(line.indexOf("contact_name=")+14, line.length()-4);
 
             Contact newContact = new Contact(name, number);
-            Message message = new Message(text, date, mode);
+            Message message = new Message(text, date, mode, name);
 
             boolean addMe = true;
             for(Contact contact : contacts) {

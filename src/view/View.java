@@ -26,6 +26,7 @@ public class View extends JFrame {
     private JPanel messagePanel;
     private JButton fileChooser;
     private JLabel lblContacts;
+    private Dimension defaultMessagePaneSize;
 
     /**
      * The constructor for a View object.
@@ -88,6 +89,7 @@ public class View extends JFrame {
 
         scroll1.setViewportView(messagePanel);
         getContentPane().add(scroll1);
+        defaultMessagePaneSize = messagePanel.getSize();
     }
 
     /**
@@ -98,7 +100,11 @@ public class View extends JFrame {
      * @param contacts The list of contacts processed by the model
      */
     public void addPeople(ArrayList<Contact> contacts) {
+        System.out.println("CALL TO ADDPEOPLE");
+        messagePanel.setSize(defaultMessagePaneSize);
+        messagePanel.removeAll();
         contactPanel.removeAll();
+        contactPanel.repaint();
         contactPanel.add(fileChooser);
         contactPanel.add(lblContacts);
         for(final Contact c: contacts){
@@ -106,12 +112,12 @@ public class View extends JFrame {
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     messagePanel.removeAll();
-                    for(Message m: c.getMessages()){
-                        TextMessagePanel textMessage = new TextMessagePanel(m, c.getName());
+                    for (Message m : c.getMessages()) {
+                        TextMessagePanel textMessage = new TextMessagePanel(m);
                         Dimension dim = messagePanel.getSize();
-                        dim.setSize(dim.getWidth()/2,dim.getHeight());
+                        dim.setSize(dim.getWidth() / 2, dim.getHeight());
                         textMessage.setMaximumSize(dim);
-                        if(m.getMode() == Message.OUTBOUND_MESSAGE)
+                        if (m.getMode() == Message.OUTBOUND_MESSAGE)
                             textMessage.setAlignmentX(LEFT_ALIGNMENT);
                         else
                             textMessage.setAlignmentX(RIGHT_ALIGNMENT);
@@ -123,8 +129,8 @@ public class View extends JFrame {
                 }
             });
             contactPanel.add(contactButton);
-            contactPanel.setMinimumSize(contactPanel.getPreferredSize());
-            getContentPane().validate();
         }
+        contactPanel.setMinimumSize(contactPanel.getPreferredSize());
+        getContentPane().validate();
     }
 }

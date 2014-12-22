@@ -16,7 +16,7 @@ import java.awt.*;
 public class TextMessagePanel extends JPanel{
 
     private Message myMessage;
-    private String myName;
+    private JTextArea area;
 
     /**
      * Constructs the TextMessagePanel and calls
@@ -24,31 +24,26 @@ public class TextMessagePanel extends JPanel{
      * (i.e. Contact name, message, date sent, etc.)
      *
      * @param message The message to be displayed
-     * @param name The name of the contact that this message belongs to
      */
-    public TextMessagePanel(Message message, String name) {
+    public TextMessagePanel(Message message) {
 
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         myMessage = message;
-        myName = name;
         addPerson();
         addText();
+        addDate();
     }
 
     /**
      * Adds the sender of the message to the TextMessagePanel
      */
     private void addPerson() {
-        JLabel nameLabel = null;
-        if(myMessage.getMode() == Message.OUTBOUND_MESSAGE){
-
-            nameLabel = new JLabel(myName);
-            nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-        }
-        else {
+        JLabel nameLabel;
+        if(myMessage.getMode() == Message.INBOUND_MESSAGE)
+            nameLabel = new JLabel(myMessage.getUser());
+        else
             nameLabel = new JLabel("You");
-            nameLabel.setAlignmentX(CENTER_ALIGNMENT);
-        }
+        nameLabel.setAlignmentX(CENTER_ALIGNMENT);
         add(nameLabel);
     }
 
@@ -56,7 +51,7 @@ public class TextMessagePanel extends JPanel{
      * Adds the message body to the TextMessagePanel
      */
     private void addText() {
-        JTextArea area = new JTextArea();
+        area = new JTextArea();
         //area.setSize(50, 100);
         area.setText(myMessage.getText());
         area.setLineWrap(true);
@@ -71,6 +66,12 @@ public class TextMessagePanel extends JPanel{
         else
             area.setAlignmentX(LEFT_ALIGNMENT);
         add(area);
+    }
+
+    private void addDate(){
+        JLabel dateLabel = new JLabel(myMessage.getDate().toString());
+        dateLabel.setAlignmentX(area.getAlignmentX());
+        add(dateLabel);
     }
 
 }

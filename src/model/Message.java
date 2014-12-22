@@ -16,6 +16,7 @@ public class Message {
     private String text;
     private Date date;
     private int mode; // 0 if in 1 if out
+    private String user;
 
     public static final int OUTBOUND_MESSAGE = 1;
     public static final int INBOUND_MESSAGE = 0;
@@ -26,34 +27,38 @@ public class Message {
      * @param textIn The text of the message
      * @param dateIn The date the message was sent
      * @param modeIn 0 if in, 1 if out
+     * @param userIn The user's name that is associated with this text
      */
-    public Message(String textIn, Date dateIn, int modeIn) {
+    public Message(String textIn, Date dateIn, int modeIn, String userIn) {
         text = textIn;
         date = dateIn;
         mode = modeIn;
+        user = userIn;
     }
 
     /**
-     * Returns the body of the message
-     * @return
+     * @return Returns the body of the message
      */
     public String getText(){
         return text;
     }
 
     /**
-     * Returns the date the message was sent
-     * @return
+     * @return Returns the date the message was sent
      */
     public Date getDate () {
         return date;
     }
 
     /**
-     * Returns the mode of the message
-     * @return
+     * @return Returns the mode of the message
      */
     public int getMode() {
         return mode;
     }
+
+    /**
+     * @return the name of the user associated with this message
+     */
+    public String getUser(){return user; }
 }
