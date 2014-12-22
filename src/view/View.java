@@ -4,6 +4,7 @@ import model.Contact;
 import model.Message;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,8 @@ public class View extends JFrame {
     private IV2MAdapter model = null;
     private JPanel contactPanel;
     private JPanel messagePanel;
+    private JButton fileChooser;
+    private JLabel lblContacts;
 
     public View(IV2MAdapter adptIn) {
         model = adptIn;
@@ -29,16 +32,19 @@ public class View extends JFrame {
     }
 
     public void initGUI() {
-        setSize(600,450);
+        setSize(600,500);
+        setResizable(false);
         setTitle("Text Message Viewer");
         JScrollPane scroll = new JScrollPane();
-        getContentPane().add(scroll, BorderLayout.WEST);
+        //scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.X_AXIS));
+        getContentPane().add(scroll);
 
         contactPanel = new JPanel();
-        contactPanel.setLayout(new BoxLayout(contactPanel,BoxLayout.Y_AXIS));
+        contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
         scroll.setViewportView(contactPanel);
 
-        JButton fileChooser = new JButton("Choose SMS file");
+        fileChooser = new JButton("Choose SMS file");
         fileChooser.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 final JFileChooser fc = new JFileChooser();
@@ -50,39 +56,49 @@ public class View extends JFrame {
         });
         contactPanel.add(fileChooser);
 
-        JLabel lblContacts = new JLabel("Contacts:");
+        lblContacts = new JLabel("Contacts:");
         contactPanel.add(lblContacts);
 
         JScrollPane scroll1 = new JScrollPane();
+        scroll1.setWheelScrollingEnabled(true);
+        scroll.setWheelScrollingEnabled(true);
+        scroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel,BoxLayout.Y_AXIS));
+        messagePanel.setBorder(new EmptyBorder(5,20,5,20));
 
         scroll1.setViewportView(messagePanel);
-        getContentPane().add(scroll1, BorderLayout.CENTER);
+        getContentPane().add(scroll1);
     }
 
     public void addPeople(ArrayList<Contact> contacts) {
+        contactPanel.removeAll();
+        contactPanel.add(fileChooser);
+        contactPanel.add(lblContacts);
         for(final Contact c: contacts){
             JButton contactButton = new JButton(c.getName());
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     messagePanel.removeAll();
                     for(Message m: c.getMessages()){
-                        JLabel a = new JLabel(m.getText());
-                        if(m.getMode()==0){
-                            a.setAlignmentX(Component.RIGHT_ALIGNMENT);
-                        }
-                        else {
-                            a.setAlignmentX(Component.LEFT_ALIGNMENT);
-                        }
-                        System.out.println(m.getText());
-                        messagePanel.add(a);
+                        TextMessagePanel textMessage = new TextMessagePanel(m, c.getName());
+                        Dimension dim = messagePanel.getSize();
+                        dim.setSize(dim.getWidth()/2,dim.getHeight());
+                        textMessage.setMaximumSize(dim);
+                        if(m.getMode() == 0)
+                            textMessage.setAlignmentX(LEFT_ALIGNMENT);
+                        else
+                            textMessage.setAlignmentX(RIGHT_ALIGNMENT);
+                        messagePanel.add(textMessage);
+                        contactPanel.setPreferredSize(contactPanel.getPreferredSize());
+                        getContentPane().validate();
                     }
                     messagePanel.validate();
                 }
             });
             contactPanel.add(contactButton);
+            contactPanel.setMinimumSize(contactPanel.getPreferredSize());
             getContentPane().validate();
         }
     }
