@@ -3,7 +3,8 @@ package view;
 import model.Message;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
 /**
@@ -15,7 +16,8 @@ import java.awt.*;
  */
 public class TextMessagePanel extends JPanel{
 
-    private Message myMessage;
+   private static final long serialVersionUID = 4508730492790941948L;
+	private Message myMessage;
     private JTextArea area;
 
     /**
@@ -39,6 +41,7 @@ public class TextMessagePanel extends JPanel{
      */
     private void addPerson() {
         JLabel nameLabel;
+
         if(myMessage.getMode() == Message.INBOUND_MESSAGE) {
             nameLabel = new JLabel(myMessage.getUser());
             nameLabel.setAlignmentX(LEFT_ALIGNMENT);
@@ -47,6 +50,9 @@ public class TextMessagePanel extends JPanel{
             nameLabel = new JLabel("You");
             nameLabel.setAlignmentX(RIGHT_ALIGNMENT);
         }
+
+        nameLabel.setFont(new Font("Helvetica", Font.BOLD, 12));
+        nameLabel.setBorder(new EmptyBorder(3,0,3,0));
         if(!(myMessage.getPreviousMessage().getMode() == myMessage.getMode()))
             add(nameLabel);
     }
@@ -61,14 +67,17 @@ public class TextMessagePanel extends JPanel{
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setEditable(false);
-        area.setBackground(new Color(240,240, 240));
 
-        area.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        area.setBackground(new Color(255, 255, 255));
+        area.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
-        if(myMessage.getMode() == Message.OUTBOUND_MESSAGE)
+        area.setFont(new Font("Helvetica", Font.PLAIN, 12));
+        if(myMessage.getMode() == Message.OUTBOUND_MESSAGE) {
             area.setAlignmentX(RIGHT_ALIGNMENT);
-        else
+        }
+        else {
             area.setAlignmentX(LEFT_ALIGNMENT);
+        }
         add(area);
     }
 
@@ -78,7 +87,7 @@ public class TextMessagePanel extends JPanel{
     private void addDate(){
         JLabel dateLabel = new JLabel(myMessage.getDate().toString());
         dateLabel.setAlignmentX(area.getAlignmentX());
-        dateLabel.setFont(new Font("Times New Roman", Font.PLAIN, 10));
+        dateLabel.setFont(new Font("Helvetica", Font.PLAIN, 10));
         add(dateLabel);
     }
 

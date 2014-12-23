@@ -54,6 +54,7 @@ public class View extends JFrame {
      */
     public void initGUI() {
         setSize(600,500);
+        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("img/TextMessageViewerIcon.png")));
         setResizable(false);
         setTitle("Text Message Viewer");
         JScrollPane scroll = new JScrollPane();
@@ -102,7 +103,6 @@ public class View extends JFrame {
      * @param contacts The list of contacts processed by the model
      */
     public void addPeople(ArrayList<Contact> contacts) {
-        System.out.println("CALL TO ADDPEOPLE");
         messagePanel.setSize(defaultMessagePaneSize);
         contactPanel.setSize(defaultContactPaneSize);
         messagePanel.removeAll();

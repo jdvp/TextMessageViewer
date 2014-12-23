@@ -73,7 +73,7 @@ public class Model {
             Date date = new Date(Long.parseLong(line.substring(line.indexOf("date=")+6, line.indexOf("type=")-2)));
             int mode = Integer.parseInt(line.substring(line.indexOf("type=")+6,line.indexOf("type=")+7)) - 1;
             String text = line.substring(line.indexOf("body=")+6, line.indexOf("toa=")-2);
-            String name = line.substring(line.indexOf("contact_name=")+14, line.length()-4);
+            String name = line.substring(line.indexOf("name=")+6, line.length()-4);
 
             Contact newContact = new Contact(name, number);
             Message message = new Message(text, date, mode, name);
