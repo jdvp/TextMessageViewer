@@ -21,6 +21,8 @@ import java.util.ArrayList;
  */
 public class View extends JFrame {
 
+
+    private static final long serialVersionUID = 4737920320973004483L;
     private IV2MAdapter model = null;
     private JPanel contactPanel;
     private JPanel messagePanel;

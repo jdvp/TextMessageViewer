@@ -43,6 +43,8 @@ public class Model {
      */
     public void setMessageFile(File file) {
         contacts = new ArrayList<Contact>();
+
+        //Try to open the file
         Scanner fileReader = null;
         try {
             fileReader = new Scanner(file);
@@ -52,28 +54,43 @@ public class Model {
             e.printStackTrace();
         }
 
-        //Skip header
-        fileReader.nextLine();
-        fileReader.nextLine();
-        fileReader.nextLine();
+        //Parse the header and search for the count
+        //which details the number of messages stored
+        int SMSCount = 0;
+        while(fileReader.hasNext()){
+            String headerLine = fileReader.nextLine();
+            if(headerLine.contains("count")){
+                int start = headerLine.indexOf("\"")+1;
+                int end = headerLine.indexOf("\"",start+1);
+                SMSCount = Integer.parseInt(headerLine.substring(start,end));
+                break;
+            }
+        }
 
-        //Parse number of messages
-        String smsCount = fileReader.nextLine();
-        smsCount = smsCount.replaceAll("<smses count=\"","");
-        smsCount = smsCount.replaceAll("\">","");
-
-        for(int x = 0; x < Integer.parseInt(smsCount); x++){
+        //Parse the messages
+        for(int x = 0; x < SMSCount; x++){
 
             if(fileReader.next().equals("<mms"))
                 break;
 
             String line = fileReader.nextLine();
+            while(!line.contains("/>"))
+                line += fileReader.nextLine();
+            ParsedLine parsedSMSLine = new ParsedLine(line);
 
-            String number = line.substring(line.indexOf("address=")+9, line.indexOf("date=")-2);
-            Date date = new Date(Long.parseLong(line.substring(line.indexOf("date=")+6, line.indexOf("type=")-2)));
-            int mode = Integer.parseInt(line.substring(line.indexOf("type=")+6,line.indexOf("type=")+7)) - 1;
-            String text = line.substring(line.indexOf("body=")+6, line.indexOf("toa=")-2);
-            String name = line.substring(line.indexOf("name=")+6, line.length()-4);
+//            String number = line.substring(line.indexOf("address=")+9, line.indexOf("date=")-2);
+//            Date date = new Date(Long.parseLong(line.substring(line.indexOf("date=")+6, line.indexOf("type=")-2)));
+//            int mode = Integer.parseInt(line.substring(line.indexOf("type=")+6,line.indexOf("type=")+7)) - 1;
+//            String text = line.substring(line.indexOf("body=")+6, line.indexOf("toa=")-2);
+//            String name = line.substring(line.indexOf("name=")+6, line.length()-4);
+
+            String number = parsedSMSLine.findMatch("address");
+            Date date = new Date(Long.parseLong(parsedSMSLine.findMatch("date")));
+            int mode = Integer.parseInt(parsedSMSLine.findMatch("type"));
+            String text = parsedSMSLine.findMatch("body");
+            String name = parsedSMSLine.findMatch("name");
+            if(name.equals(""))
+                name = "(unknown)";
 
             Contact newContact = new Contact(name, number);
             Message message = new Message(text, date, mode, name);

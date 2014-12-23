@@ -16,7 +16,7 @@ import java.awt.*;
  */
 public class TextMessagePanel extends JPanel{
 
-   private static final long serialVersionUID = 4508730492790941948L;
+    private static final long serialVersionUID = 4508730492790941948L;
 	private Message myMessage;
     private JTextArea area;
 
