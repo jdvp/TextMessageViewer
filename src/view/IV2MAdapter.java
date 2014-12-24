@@ -7,7 +7,6 @@ import java.io.File;
  * with the model
  *
  * @author JD Porterfield
- * @date 12/18/2014
  */
 public interface IV2MAdapter {
 

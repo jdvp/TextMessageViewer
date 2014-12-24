@@ -6,7 +6,6 @@ import java.util.ArrayList;
  * This is the adapter that the model uses to interact with the view
  *
  * @author JD Porterfield
- * @date 12/18/2014
  */
 public interface IM2VAdapter {
 
@@ -21,7 +20,7 @@ public interface IM2VAdapter {
      * Allows the model to tell the view to add the processed
      * contact data however the view sees fit.
      *
-     * @param contacts
+     * @param contacts The list of contacts to add to the view
      */
     public void addPeople(ArrayList<Contact> contacts);
 

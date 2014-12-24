@@ -17,11 +17,16 @@ import java.util.ArrayList;
  * them.
  *
  * @author JD Porterfield
- * @date 12/18/2014
  */
 public class Controller {
 
+    /**
+     * The model of the system
+     */
     Model model = new Model(IM2VAdapter.NULL_ADAPTER);
+    /**
+     * The view of the system
+     */
     View view = new View(IV2MAdapter.NULL_ADAPTER);
 
     /**

@@ -13,13 +13,22 @@ import java.util.Scanner;
  * and storing these objects.
  *
  * @author JD Porterfield
- * @date 12/18/2014
  */
 public class Model {
 
+    /**
+     * The adapter used to interact with the view
+     */
     IM2VAdapter view = null;
+    /**
+     * The list of contacts held by the system and filled by the setMessageFile method
+     */
     ArrayList<Contact> contacts = new ArrayList<Contact>();
 
+    /**
+     * The constructor for the model
+     * @param adptIn The adapter used to interact with the view
+     */
     public Model(IM2VAdapter adptIn) {
         view = adptIn;
     }
@@ -78,14 +87,9 @@ public class Model {
                 line += fileReader.nextLine();
             ParsedLine parsedSMSLine = new ParsedLine(line);
 
-//            String number = line.substring(line.indexOf("address=")+9, line.indexOf("date=")-2);
-//            Date date = new Date(Long.parseLong(line.substring(line.indexOf("date=")+6, line.indexOf("type=")-2)));
-//            int mode = Integer.parseInt(line.substring(line.indexOf("type=")+6,line.indexOf("type=")+7)) - 1;
-//            String text = line.substring(line.indexOf("body=")+6, line.indexOf("toa=")-2);
-//            String name = line.substring(line.indexOf("name=")+6, line.length()-4);
-
             String number = parsedSMSLine.findMatch("address");
             Date date = new Date(Long.parseLong(parsedSMSLine.findMatch("date")));
+            //-1 since in text stores inbound and outbound are stored as 1 and 2 not 0 and 1
             int mode = Integer.parseInt(parsedSMSLine.findMatch("type")) -1;
             String text = parsedSMSLine.findMatch("body");
             String name = parsedSMSLine.findMatch("name");

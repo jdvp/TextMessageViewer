@@ -9,11 +9,22 @@ import java.util.Date;
  * the Contact and the user have messaged each other.
  *
  * @author JD Porterfield
- * @date 12/20/2014
+ * 12/20/2014
  */
 public class Contact {
+
+    /**
+     * The name of the contact
+     */
     private String name;
+    /**
+     * The number of a contact. Since we aren't interested in actually processing it as
+     * numerical data, it is stored as a String.
+     */
     private String number;
+    /**
+     * The messages that pertain to this contact
+     */
     private ArrayList<Message> messages;
 
     /**

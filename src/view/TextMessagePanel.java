@@ -12,7 +12,6 @@ import java.awt.*;
  * display text messages
  *
  * @author JD Porterfield
- * @date 12/22/2014
  */
 public class TextMessagePanel extends JPanel{
 
@@ -25,6 +24,8 @@ public class TextMessagePanel extends JPanel{
      * Constructs the TextMessagePanel and calls
      * on subroutines to add specific componets
      * (i.e. Contact name, message, date sent, etc.)
+     * and decides what the orientation for the objects in the panel is
+     * based on whether it is inbound or outbound.
      *
      * @param message The message to be displayed
      */

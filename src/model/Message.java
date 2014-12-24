@@ -8,18 +8,38 @@ import java.util.Date;
  * text messages is stored here.
  *
  * @author JD Porterfield
- * @date 12/20/2014
  **/
 
 public class Message {
 
+    /**
+     * The actual body of the message
+     */
     private String text;
+    /**
+     * The date that the message was received (which includes the time)
+     */
     private Date date;
+    /**
+     * Indicates whether a message is in or out. Is compared to INBOUND_ and OUTBOUND_MESSAGE
+     */
     private int mode; // 0 if in 1 if out
+    /**
+     * The name of the user that sent or received the message (the owner of the message store is nameless)
+     */
     private String user;
+    /**
+     * The previous message sent to this message's user
+     */
     private Message previousMessage = null;
 
+    /**
+     * Indicates a message is outbound and was sent TO the user specified by the user String
+     */
     public static final int OUTBOUND_MESSAGE = 1;
+    /**
+     * Indicates a message is inbound and was sent FROM the user specified by the user String
+     */
     public static final int INBOUND_MESSAGE = 0;
 
     /**
@@ -38,21 +58,21 @@ public class Message {
     }
 
     /**
-     * @return Returns the body of the message
+     * @return the body of the message
      */
     public String getText(){
         return text;
     }
 
     /**
-     * @return Returns the date the message was sent
+     * @return the date the message was sent
      */
     public Date getDate () {
         return date;
     }
 
     /**
-     * @return Returns the mode of the message
+     * @return the mode of the message
      */
     public int getMode() {
         return mode;
@@ -73,7 +93,7 @@ public class Message {
     }
 
     /**
-     * @return This message's predecessor
+     * @return this message's predecessor
      */
     public Message getPreviousMessage() {
         return previousMessage;

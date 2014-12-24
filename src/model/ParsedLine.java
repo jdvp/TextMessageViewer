@@ -7,7 +7,6 @@ import java.util.HashMap;
  * pairs found within the line of a SMS record
  *
  * @author JD Porterfield
- * @date 12/23/2014
  */
 public class ParsedLine {
 
@@ -21,22 +20,22 @@ public class ParsedLine {
      * Takes in a String (taken from an XML file)
      * And parses all of the keys and values held within
      * the line into a HashMap
-     * @param in
+     * @param lineToParse The line that is to be parsed
      */
-    public ParsedLine(String in){
-        in = in.replaceAll("<sms ", "");
-        while(in.length()>0){
-            if(in.equals("/>")){
+    public ParsedLine(String lineToParse){
+        lineToParse = lineToParse.replaceAll("<sms ", "");
+        while(lineToParse.length()>0){
+            if(lineToParse.equals("/>")){
                 break;
             }
             String fieldName = "";
             String fieldValue = "";
-            int separator = in.indexOf("=");
-            char surrounder = in.charAt(separator+1);
-            fieldName = in.substring(0,separator);
-            int endBody = in.indexOf(surrounder,separator+2);
-            fieldValue = in.substring(separator+2,endBody);
-            in = in.substring(endBody+2);
+            int separator = lineToParse.indexOf("=");
+            char valueContainer = lineToParse.charAt(separator+1);
+            fieldName = lineToParse.substring(0,separator);
+            int endBody = lineToParse.indexOf(valueContainer,separator+2);
+            fieldValue = lineToParse.substring(separator+2,endBody);
+            lineToParse = lineToParse.substring(endBody+2);
             fields.put(fieldName,fieldValue);
         }
     }

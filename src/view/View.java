@@ -17,7 +17,6 @@ import java.util.ArrayList;
  * displaying the appropriate content
  *
  * @author JD Porterfield
- * @date 12/18/2014
  */
 public class View extends JFrame {
 
