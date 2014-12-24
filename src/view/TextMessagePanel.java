@@ -19,6 +19,7 @@ public class TextMessagePanel extends JPanel{
     private static final long serialVersionUID = 4508730492790941948L;
 	private Message myMessage;
     private JTextArea area;
+    private float myAlignment;
 
     /**
      * Constructs the TextMessagePanel and calls
@@ -31,6 +32,10 @@ public class TextMessagePanel extends JPanel{
 
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         myMessage = message;
+        if(myMessage.getMode() == Message.INBOUND_MESSAGE)
+            myAlignment = LEFT_ALIGNMENT;
+        else
+            myAlignment = RIGHT_ALIGNMENT;
         addPerson();
         addText();
         addDate();
@@ -42,15 +47,12 @@ public class TextMessagePanel extends JPanel{
     private void addPerson() {
         JLabel nameLabel;
 
-        if(myMessage.getMode() == Message.INBOUND_MESSAGE) {
+        if(myMessage.getMode() == Message.INBOUND_MESSAGE)
             nameLabel = new JLabel(myMessage.getUser());
-            nameLabel.setAlignmentX(LEFT_ALIGNMENT);
-        }
-        else {
+        else
             nameLabel = new JLabel("You");
-            nameLabel.setAlignmentX(RIGHT_ALIGNMENT);
-        }
 
+        nameLabel.setAlignmentX(myAlignment);
         nameLabel.setFont(new Font("Helvetica", Font.BOLD, 12));
         nameLabel.setBorder(new EmptyBorder(3,0,3,0));
         if(!(myMessage.getPreviousMessage().getMode() == myMessage.getMode()))
@@ -68,16 +70,13 @@ public class TextMessagePanel extends JPanel{
         area.setWrapStyleWord(true);
         area.setEditable(false);
 
+        area.setSize(area.getPreferredSize());
+
         area.setBackground(new Color(255, 255, 255));
         area.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
         area.setFont(new Font("Helvetica", Font.PLAIN, 12));
-        if(myMessage.getMode() == Message.OUTBOUND_MESSAGE) {
-            area.setAlignmentX(RIGHT_ALIGNMENT);
-        }
-        else {
-            area.setAlignmentX(LEFT_ALIGNMENT);
-        }
+         area.setAlignmentX(myAlignment);
         add(area);
     }
 
@@ -86,7 +85,7 @@ public class TextMessagePanel extends JPanel{
      */
     private void addDate(){
         JLabel dateLabel = new JLabel(myMessage.getDate().toString());
-        dateLabel.setAlignmentX(area.getAlignmentX());
+        dateLabel.setAlignmentX(myAlignment);
         dateLabel.setFont(new Font("Helvetica", Font.PLAIN, 10));
         add(dateLabel);
     }

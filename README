@@ -20,4 +20,6 @@ button and opening a new SMS file suffices.
 
 NOTE:
     This program is only verified to work with the XML files
-    output by the SMSBackup Android Application.
+    output by the following Android applications:
+        SMS Backup & Restore
+        Super Backup

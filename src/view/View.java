@@ -30,6 +30,8 @@ public class View extends JFrame {
     private JLabel lblContacts;
     private Dimension defaultMessagePaneSize;
     private Dimension defaultContactPaneSize;
+    private JScrollPane contactScrollPane;
+    private JScrollPane messageScrollPane;
 
     /**
      * The constructor for a View object.
@@ -59,13 +61,13 @@ public class View extends JFrame {
         setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("img/TextMessageViewerIcon.png")));
         setResizable(false);
         setTitle("Text Message Viewer");
-        JScrollPane scroll = new JScrollPane();
-        getContentPane().setLayout(new BoxLayout(getContentPane(),BoxLayout.X_AXIS));
-        getContentPane().add(scroll);
+        contactScrollPane = new JScrollPane();
+        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+        getContentPane().add(contactScrollPane);
 
         contactPanel = new JPanel();
-        contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.Y_AXIS));
-        scroll.setViewportView(contactPanel);
+        contactPanel.setLayout(new BoxLayout(contactPanel, BoxLayout.PAGE_AXIS));
+        contactScrollPane.setViewportView(contactPanel);
 
         fileChooser = new JButton("Choose SMS file");
         fileChooser.addActionListener(new ActionListener() {
@@ -77,22 +79,24 @@ public class View extends JFrame {
                 model.setMessageFile(retFile);
             }
         });
+        fileChooser.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) fileChooser.getPreferredSize().getHeight()));
+        fileChooser.setHorizontalAlignment(SwingConstants.LEFT);
         contactPanel.add(fileChooser);
 
-        lblContacts = new JLabel("Contacts:");
+        lblContacts = new JLabel("      Contacts:");
         contactPanel.add(lblContacts);
 
-        JScrollPane scroll1 = new JScrollPane();
-        scroll1.setWheelScrollingEnabled(true);
-        scroll.setWheelScrollingEnabled(true);
-        scroll1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        messageScrollPane = new JScrollPane();
+        messageScrollPane.setWheelScrollingEnabled(true);
+        contactScrollPane.setWheelScrollingEnabled(true);
+        messageScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         messagePanel = new JPanel();
-        messagePanel.setLayout(new BoxLayout(messagePanel,BoxLayout.Y_AXIS));
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setBorder(new EmptyBorder(5,20,5,20));
 
-        scroll1.setViewportView(messagePanel);
-        getContentPane().add(scroll1);
+        messageScrollPane.setViewportView(messagePanel);
+        getContentPane().add(messageScrollPane);
         defaultContactPaneSize = contactPanel.getSize();
         defaultMessagePaneSize = messagePanel.getSize();
     }
@@ -109,14 +113,17 @@ public class View extends JFrame {
         contactPanel.setSize(defaultContactPaneSize);
         messagePanel.removeAll();
         contactPanel.removeAll();
+        messagePanel.repaint();
         contactPanel.repaint();
         contactPanel.add(fileChooser);
         contactPanel.add(lblContacts);
+        int maxButtonWidth = 0;
         for(final Contact c: contacts){
             JButton contactButton = new JButton(c.getName());
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     messagePanel.removeAll();
+                    messagePanel.repaint();
                     for (Message m : c.getMessages()) {
                         TextMessagePanel textMessage = new TextMessagePanel(m);
                         Dimension dim = messagePanel.getSize();
@@ -129,11 +136,27 @@ public class View extends JFrame {
                         messagePanel.add(textMessage);
                         getContentPane().validate();
                     }
+
+                    //-40 for the scroll bar
+                    int messageWidth = messageScrollPane.getViewport().getWidth()- 40;
+                    for(int i = 0; i < messagePanel.getComponentCount(); i++) {
+                        messagePanel.getComponent(i).setMaximumSize(new Dimension(messageWidth / 2,Integer.MAX_VALUE));
+                        messagePanel.setVisible(true);
+                    }
                     messagePanel.validate();
+                    getContentPane().validate();
                 }
             });
+
+            if(contactButton.getPreferredSize().getWidth() > maxButtonWidth)
+                maxButtonWidth = (int) contactButton.getPreferredSize().getWidth();
+            contactButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) contactButton.getPreferredSize().getHeight()));
+            contactButton.setHorizontalAlignment(SwingConstants.LEFT);
             contactPanel.add(contactButton);
         }
+        //+50 for the padding on the buttons
+        contactPanel.setMinimumSize(new Dimension(maxButtonWidth + 50, 100));
+        contactScrollPane.setMinimumSize(new Dimension(maxButtonWidth + 50, 100));
         getContentPane().validate();
     }
 }

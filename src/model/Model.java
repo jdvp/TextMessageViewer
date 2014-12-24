@@ -86,7 +86,7 @@ public class Model {
 
             String number = parsedSMSLine.findMatch("address");
             Date date = new Date(Long.parseLong(parsedSMSLine.findMatch("date")));
-            int mode = Integer.parseInt(parsedSMSLine.findMatch("type"));
+            int mode = Integer.parseInt(parsedSMSLine.findMatch("type")) -1;
             String text = parsedSMSLine.findMatch("body");
             String name = parsedSMSLine.findMatch("name");
             if(name.equals(""))
