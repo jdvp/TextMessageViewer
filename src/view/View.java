@@ -136,14 +136,8 @@ public class View extends JFrame {
                         getContentPane().validate();
                     }
 
-                    //-40 for the scroll bar
-                    int messageWidth = messageScrollPane.getViewport().getWidth()- 40;
-                    for(int i = 0; i < messagePanel.getComponentCount(); i++) {
-                        messagePanel.getComponent(i).setMaximumSize(new Dimension(messageWidth / 2,Integer.MAX_VALUE));
-                        messagePanel.setVisible(true);
-                    }
-                    messagePanel.validate();
-                    getContentPane().validate();
+                    setMessageScrollPaneSize();
+
                 }
             });
 
@@ -156,6 +150,19 @@ public class View extends JFrame {
         //+50 for the padding on the buttons
         contactPanel.setMinimumSize(new Dimension(maxButtonWidth + 50, 100));
         contactScrollPane.setMinimumSize(new Dimension(maxButtonWidth + 50, 100));
+        getContentPane().validate();
+    }
+
+    /**
+     * Used to set the size of the message scroll pane so that it is always the correct size
+     */
+    private void setMessageScrollPaneSize(){
+        int messageWidth = messageScrollPane.getViewport().getWidth()- 40;
+        for(int i = 0; i < messagePanel.getComponentCount(); i++) {
+            messagePanel.getComponent(i).setMaximumSize(new Dimension(messageWidth / 2,Integer.MAX_VALUE));
+            messagePanel.setVisible(true);
+        }
+        messagePanel.validate();
         getContentPane().validate();
     }
 }
