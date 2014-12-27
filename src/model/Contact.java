@@ -106,4 +106,22 @@ public class Contact {
     public String toString(){
         return name+" : "+number;
     }
+
+
+    /**
+     * Creates list of messages that contain the query and returns the list
+     *
+     * @param query The string that we are looking to match
+     * @return A list of messages that have text matching the input query
+     */
+    public ArrayList<Message> search(String query){
+        ArrayList<Message> matchedQuery = new ArrayList<Message>();
+        for(Message m: messages) {
+            //contains ignore case
+            if (m.getText().toLowerCase().contains(query.toLowerCase())) {
+                matchedQuery.add(m);
+            }
+        }
+        return matchedQuery;
+    }
 }

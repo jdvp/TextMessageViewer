@@ -31,6 +31,8 @@ public class View extends JFrame {
     private Dimension defaultContactPaneSize;
     private JScrollPane contactScrollPane;
     private JScrollPane messageScrollPane;
+    private JTextField searchQuery;
+    private JButton search;
 
     /**
      * The constructor for a View object.
@@ -98,6 +100,48 @@ public class View extends JFrame {
         getContentPane().add(messageScrollPane);
         defaultContactPaneSize = contactPanel.getSize();
         defaultMessagePaneSize = messagePanel.getSize();
+        JMenuBar myMenu = new JMenuBar();
+        searchQuery = new JTextField(40);
+        search = new JButton("Search");
+        search.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<Message> searchResults = model.search(searchQuery.getText());
+                messagePanel.removeAll();
+                messagePanel.repaint();
+                JLabel resultMessage = new JLabel();
+                resultMessage.setAlignmentX(LEFT_ALIGNMENT);
+                resultMessage.setHorizontalAlignment(SwingConstants.LEFT);
+                String query = searchQuery.getText();
+                if(!query.equals("")) {
+                    if (searchResults.size() == 0) {
+                        resultMessage.setText("No results for : '" + query +"'");
+                        messagePanel.add(resultMessage);
+                    } else {
+                        resultMessage.setText("Search results for : '" + query + "'");
+                        messagePanel.add(resultMessage);
+                        for (Message m : searchResults) {
+                            TextMessagePanel textMessage = new TextMessagePanel(m, query);
+                            Dimension dim = messagePanel.getSize();
+                            dim.setSize(dim.getWidth() / 2, dim.getHeight());
+                            textMessage.setMaximumSize(dim);
+                            if (m.getMode() == Message.OUTBOUND_MESSAGE)
+                                textMessage.setAlignmentX(LEFT_ALIGNMENT);
+                            else
+                                textMessage.setAlignmentX(RIGHT_ALIGNMENT);
+                            messagePanel.add(textMessage);
+                            getContentPane().validate();
+                        }
+                    }
+
+                    searchQuery.setText("");
+                    setMessageScrollPaneSize(1);
+                }
+            }
+        });
+        myMenu.add(searchQuery);
+        myMenu.add(search);
+        myMenu.setAlignmentX(RIGHT_ALIGNMENT);
+        setJMenuBar(myMenu);
     }
 
     /**
@@ -117,7 +161,7 @@ public class View extends JFrame {
         contactPanel.add(fileChooser);
         contactPanel.add(lblContacts);
         int maxButtonWidth = 0;
-        for(final Contact c: contacts){
+        for(final Contact c: contacts) {
             JButton contactButton = new JButton(c.getName());
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -136,12 +180,11 @@ public class View extends JFrame {
                         getContentPane().validate();
                     }
 
-                    setMessageScrollPaneSize();
-
+                    setMessageScrollPaneSize(0);
                 }
             });
 
-            if(contactButton.getPreferredSize().getWidth() > maxButtonWidth)
+            if (contactButton.getPreferredSize().getWidth() > maxButtonWidth)
                 maxButtonWidth = (int) contactButton.getPreferredSize().getWidth();
             contactButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) contactButton.getPreferredSize().getHeight()));
             contactButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -155,10 +198,12 @@ public class View extends JFrame {
 
     /**
      * Used to set the size of the message scroll pane so that it is always the correct size
+     *
+     * @param offset The number of components to skip resizing for (starting at the top)
      */
-    private void setMessageScrollPaneSize(){
+    private void setMessageScrollPaneSize(int offset){
         int messageWidth = messageScrollPane.getViewport().getWidth()- 40;
-        for(int i = 0; i < messagePanel.getComponentCount(); i++) {
+        for(int i = offset; i < messagePanel.getComponentCount(); i++) {
             messagePanel.getComponent(i).setMaximumSize(new Dimension(messageWidth / 2,Integer.MAX_VALUE));
             messagePanel.setVisible(true);
         }

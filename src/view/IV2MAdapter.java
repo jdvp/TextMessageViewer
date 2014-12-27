@@ -1,6 +1,9 @@
 package view;
 
+import model.Message;
+
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * The adapter used by the view to communicate
@@ -15,6 +18,7 @@ public interface IV2MAdapter {
      */
     IV2MAdapter NULL_ADAPTER = new IV2MAdapter() {
         public void setMessageFile(File file) {}
+        public ArrayList<Message> search(String query){return new ArrayList<Message>();}
     };
 
     /**
@@ -23,5 +27,13 @@ public interface IV2MAdapter {
      * @param file The file to process
      */
     public void setMessageFile(File file);
+
+    /**
+     * Asks the model to find messages that contain a query String
+     *
+     * @param query The string to search for
+     * @return A list of messages that contain the query
+     */
+    public ArrayList<Message> search(String query);
 
 }

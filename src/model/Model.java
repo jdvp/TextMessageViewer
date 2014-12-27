@@ -131,4 +131,18 @@ public class Model {
         body = body.replaceAll("&#10;","\n");
         return body;
     }
+
+    /**
+     * Searches through all of the contacts to check for messages that contain the query
+     *
+     * @param query The text we are looking to find within a message
+     * @return A list of all of the messages across all of the contacts that contain the query
+     */
+    public ArrayList<Message> search(String query) {
+        ArrayList<Message> matchedQuery = new ArrayList<Message>();
+        for(Contact c: contacts){
+            matchedQuery.addAll(c.search(query));
+        }
+        return matchedQuery;
+    }
 }

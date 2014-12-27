@@ -2,6 +2,7 @@ package controller;
 
 import model.Contact;
 import model.IM2VAdapter;
+import model.Message;
 import model.Model;
 import view.IV2MAdapter;
 import view.View;
@@ -61,6 +62,11 @@ public class Controller {
         view = new View(new IV2MAdapter() {
             public void setMessageFile(File file) {
                 model.setMessageFile(file);
+            }
+
+            @Override
+            public ArrayList<Message> search(String query) {
+                return model.search(query);
             }
         });
     }

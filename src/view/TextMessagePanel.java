@@ -19,6 +19,7 @@ public class TextMessagePanel extends JPanel{
 	private Message myMessage;
     private JTextArea area;
     private float myAlignment;
+    private String mySearchQuery = null;
 
     /**
      * Constructs the TextMessagePanel and calls
@@ -30,9 +31,18 @@ public class TextMessagePanel extends JPanel{
      * @param message The message to be displayed
      */
     public TextMessagePanel(Message message) {
-
-        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         myMessage = message;
+        initialize();
+    }
+
+    public TextMessagePanel(Message message, String searchQuery){
+        myMessage = message;
+        mySearchQuery = searchQuery;
+        initialize();
+    }
+
+    private void initialize(){
+        setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         if(myMessage.getMode() == Message.INBOUND_MESSAGE)
             myAlignment = LEFT_ALIGNMENT;
         else
@@ -55,8 +65,8 @@ public class TextMessagePanel extends JPanel{
 
         nameLabel.setAlignmentX(myAlignment);
         nameLabel.setFont(new Font("Helvetica", Font.BOLD, 12));
-        nameLabel.setBorder(new EmptyBorder(3,0,3,0));
-        if(!(myMessage.getPreviousMessage().getMode() == myMessage.getMode()))
+        nameLabel.setBorder(new EmptyBorder(3, 0, 3, 0));
+        if((!(myMessage.getPreviousMessage().getMode() == myMessage.getMode()))|| mySearchQuery != null)
             add(nameLabel);
     }
 
@@ -77,7 +87,7 @@ public class TextMessagePanel extends JPanel{
         area.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 
         area.setFont(new Font("Helvetica", Font.PLAIN, 12));
-         area.setAlignmentX(myAlignment);
+        area.setAlignmentX(myAlignment);
         add(area);
     }
 
