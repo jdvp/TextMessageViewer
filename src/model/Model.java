@@ -92,6 +92,7 @@ public class Model {
             //-1 since in text stores inbound and outbound are stored as 1 and 2 not 0 and 1
             int mode = Integer.parseInt(parsedSMSLine.findMatch("type")) -1;
             String text = parsedSMSLine.findMatch("body");
+            text = parseBody(text);
             String name = parsedSMSLine.findMatch("name");
             if(name.equals(""))
                 name = "(unknown)";
@@ -114,5 +115,20 @@ public class Model {
         }
 
         view.addPeople(contacts);
+    }
+
+    /**
+     * Parses the body of the message and takes out html entities and transforms them
+     * into the correct characters
+     *
+     * @param body The message to parse for html entities
+     * @return The body of the message without html entities
+     */
+    private String parseBody(String body) {
+        body = body.replaceAll("&apos;","'");
+        body = body.replaceAll("&lt;","<");
+        body = body.replaceAll("&gt;",">");
+        body = body.replaceAll("&#10;","\n");
+        return body;
     }
 }
