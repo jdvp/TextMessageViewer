@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This is the view of the system.
@@ -20,19 +21,50 @@ import java.util.ArrayList;
  */
 public class View extends JFrame {
 
-
+    /**
+     * The View's serialVersionUID
+     */
     private static final long serialVersionUID = 4737920320973004483L;
+    /**
+     * The adapter used to communicate with the model
+     */
     private IV2MAdapter model = null;
+    /**
+     * The panel used to display the contacts
+     */
     private JPanel contactPanel;
+    /**
+     * The panel used to display messages
+     */
     private JPanel messagePanel;
+    /**
+     * The button that allows a user to pick an SMS store
+     */
     private JButton fileChooser;
+    /**
+     * "Contacts:"
+     */
     private JLabel lblContacts;
+    /**
+     * The dimension of the messagePanel when it is first created
+     */
     private Dimension defaultMessagePaneSize;
+    /**
+     * The dimension of the contactPanel when it is first created
+     */
     private Dimension defaultContactPaneSize;
+    /**
+     * The Scroll Pane that contains the contactPanel
+     */
     private JScrollPane contactScrollPane;
+    /**
+     * The Scroll Pane that contains the messagePanel
+     */
     private JScrollPane messageScrollPane;
+    /**
+     * A text field that allows users to search for specific strings in the text messages
+     */
     private JTextField searchQuery;
-    private JButton search;
 
     /**
      * The constructor for a View object.
@@ -102,10 +134,11 @@ public class View extends JFrame {
         defaultMessagePaneSize = messagePanel.getSize();
         JMenuBar myMenu = new JMenuBar();
         searchQuery = new JTextField(40);
-        search = new JButton("Search");
+        JButton search = new JButton("Search");
         search.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<Message> searchResults = model.search(searchQuery.getText());
+                Collections.sort(searchResults);
                 messagePanel.removeAll();
                 messagePanel.repaint();
                 JLabel resultMessage = new JLabel();
@@ -138,6 +171,7 @@ public class View extends JFrame {
                 }
             }
         });
+        getRootPane().setDefaultButton(search);
         myMenu.add(searchQuery);
         myMenu.add(search);
         myMenu.setAlignmentX(RIGHT_ALIGNMENT);

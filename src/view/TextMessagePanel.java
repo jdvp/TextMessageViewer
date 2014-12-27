@@ -15,10 +15,21 @@ import java.awt.*;
  */
 public class TextMessagePanel extends JPanel{
 
+    /**
+     * The TextMessagePanel serialVersionUID
+     */
     private static final long serialVersionUID = 4508730492790941948L;
-	private Message myMessage;
-    private JTextArea area;
+    /**
+     * The Message object that this TextMessagePanel will display
+     */
+	private final Message myMessage;
+    /**
+     * The alignment of objects in this panel, as determined by the mode of the input Message
+     */
     private float myAlignment;
+    /**
+     * The query that was searched to yield the display of this panel
+     */
     private String mySearchQuery = null;
 
     /**
@@ -35,12 +46,25 @@ public class TextMessagePanel extends JPanel{
         initialize();
     }
 
+    /**
+     * Constructs the TextMessagePanel and sets the searchQuery which
+     * indicates that this panel was created for a search. The difference
+     * between a TextMessagePanel that has been searched for and one that
+     * has not is that the searched one always has a name attached whereas
+     * the non-searched one does not.
+     *
+     * @param message The message to be displayed
+     * @param searchQuery The string that was queried
+     */
     public TextMessagePanel(Message message, String searchQuery){
         myMessage = message;
         mySearchQuery = searchQuery;
         initialize();
     }
 
+    /**
+     * Initializes the GUI components of this panel
+     */
     private void initialize(){
         setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         if(myMessage.getMode() == Message.INBOUND_MESSAGE)
@@ -74,7 +98,7 @@ public class TextMessagePanel extends JPanel{
      * Adds the message body to the TextMessagePanel
      */
     private void addText() {
-        area = new JTextArea();
+        JTextArea area = new JTextArea();
         //area.setSize(50, 100);
         area.setText(myMessage.getText());
         area.setLineWrap(true);

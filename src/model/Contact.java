@@ -16,16 +16,16 @@ public class Contact {
     /**
      * The name of the contact
      */
-    private String name;
+    private final String name;
     /**
      * The number of a contact. Since we aren't interested in actually processing it as
      * numerical data, it is stored as a String.
      */
-    private String number;
+    private final String number;
     /**
      * The messages that pertain to this contact
      */
-    private ArrayList<Message> messages;
+    private final ArrayList<Message> messages;
 
     /**
      * The Constructor for a Contact object
@@ -90,8 +90,8 @@ public class Contact {
      * @return true if the other Contact is equal to this one
      */
     public boolean equals(Contact otherContact) {
-        if(this.name.equals(otherContact.getName())
-                && this.number.equals(otherContact.getNumber())){
+        if(name.equals(otherContact.getName())
+                && number.equals(otherContact.getNumber())){
             return true;
         }
         return false;

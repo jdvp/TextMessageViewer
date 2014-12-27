@@ -13,7 +13,7 @@ public class ParsedLine {
     /**
      * A HashMap that contains all of the key-value pairs found in an SMS record line
      */
-    HashMap<String,String> fields = new HashMap<String, String>();
+    private final HashMap<String,String> fields = new HashMap<String, String>();
 
     /**
      * The ParsedLine constructor.

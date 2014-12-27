@@ -10,24 +10,24 @@ import java.util.Date;
  * @author JD Porterfield
  **/
 
-public class Message {
+public class Message implements Comparable<Message>{
 
     /**
      * The actual body of the message
      */
-    private String text;
+    private final String text;
     /**
      * The date that the message was received (which includes the time)
      */
-    private Date date;
+    private final Date date;
     /**
      * Indicates whether a message is in or out. Is compared to INBOUND_ and OUTBOUND_MESSAGE
      */
-    private int mode; // 0 if in 1 if out
+    private final int mode; // 0 if in 1 if out
     /**
      * The name of the user that sent or received the message (the owner of the message store is nameless)
      */
-    private String user;
+    private final String user;
     /**
      * The previous message sent to this message's user
      */
@@ -97,5 +97,16 @@ public class Message {
      */
     public Message getPreviousMessage() {
         return previousMessage;
+    }
+
+    /**
+     * Will allow the messages to be sorted by their date
+     *
+     * @param otherMessage The message to compare to
+     * @return the value returned by comparing the message's Date objects
+     */
+    @Override
+    public int compareTo(Message otherMessage){
+        return this.date.compareTo(otherMessage.getDate());
     }
 }
