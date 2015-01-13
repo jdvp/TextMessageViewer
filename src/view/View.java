@@ -114,8 +114,8 @@ public class View extends JFrame {
                 final JFileChooser fc = new JFileChooser();
                 int returnVal = fc.showOpenDialog(contactPanel);
                 File retFile = fc.getSelectedFile();
-
-                model.setMessageFile(retFile);
+                if (returnVal == JFileChooser.APPROVE_OPTION)
+                    model.setMessageFile(retFile);
             }
         });
         fileChooser.setMaximumSize(new Dimension(Integer.MAX_VALUE, (int) fileChooser.getPreferredSize().getHeight()));
@@ -248,7 +248,7 @@ public class View extends JFrame {
         contactPanel.add(lblContacts);
         int maxButtonWidth = 0;
         for(final Contact c: contacts) {
-            JButton contactButton = new JButton(c.getName());
+            JButton contactButton = new JButton("<HTML>"+c.getName()+"<br>"+c.getNumber()+"</HTML>");
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                         displayTexts(c);
