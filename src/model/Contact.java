@@ -26,6 +26,10 @@ public class Contact {
      * The messages that pertain to this contact
      */
     private final ArrayList<Message> messages;
+    /**
+     * The number of the next message to add
+     */
+    private int messageNumber = 0;
 
     /**
      * The Constructor for a Contact object
@@ -76,7 +80,9 @@ public class Contact {
         if(messages.size()>0)
             messageIn.setPreviousMessage(messages.get(messages.size()-1));
         else
-            messageIn.setPreviousMessage(new Message("null", new Date(0), 3, "null"));
+            messageIn.setPreviousMessage(new Message("null", new Date(0), 3, null));
+        messageIn.setMessageNumber(messageNumber);
+        messageNumber++;
         messages.add(messageIn);
 
     }

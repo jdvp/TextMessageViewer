@@ -8,6 +8,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +67,10 @@ public class View extends JFrame {
      * A text field that allows users to search for specific strings in the text messages
      */
     private JTextField searchQuery;
+    /**
+     * The set of contacts that was acquired by the model
+     */
+    private ArrayList<Contact> myContacts = null;
 
     /**
      * The constructor for a View object.
@@ -152,8 +158,53 @@ public class View extends JFrame {
                     } else {
                         resultMessage.setText("Search results for : '" + query + "'");
                         messagePanel.add(resultMessage);
-                        for (Message m : searchResults) {
+                        for (final Message m : searchResults) {
                             TextMessagePanel textMessage = new TextMessagePanel(m, query);
+                            textMessage.addMouseListener(new MouseListener() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    Contact contactToDisplay = new Contact("null","null");
+                                    for(Contact c : myContacts)
+                                        if(c.equals(m.getAssociatedContact()))
+                                            contactToDisplay = c;
+
+                                    displayTexts(contactToDisplay);
+                                    final int num = m.getMessageNumber();
+
+                                    System.out.println("MESSAGE NUMBER "+ num);
+                                    final Rectangle textLocation = messagePanel.getComponent(num).getBounds();
+                                    System.out.println("MESSAGE LOCATION " + textLocation.toString());
+
+                                    //Scroll to the spot in the message list that contains the searched message
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            messageScrollPane.getVerticalScrollBar().setValue(messagePanel.getComponent(num).getLocation().y);
+                                            messageScrollPane.validate();
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void mousePressed(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseReleased(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+
+                                }
+                            });
                             Dimension dim = messagePanel.getSize();
                             dim.setSize(dim.getWidth() / 2, dim.getHeight());
                             textMessage.setMaximumSize(dim);
@@ -186,6 +237,7 @@ public class View extends JFrame {
      * @param contacts The list of contacts processed by the model
      */
     public void addPeople(ArrayList<Contact> contacts) {
+        myContacts = contacts;
         messagePanel.setSize(defaultMessagePaneSize);
         contactPanel.setSize(defaultContactPaneSize);
         messagePanel.removeAll();
@@ -199,23 +251,8 @@ public class View extends JFrame {
             JButton contactButton = new JButton(c.getName());
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    messagePanel.removeAll();
-                    messagePanel.repaint();
-                    for (Message m : c.getMessages()) {
-                        TextMessagePanel textMessage = new TextMessagePanel(m);
-                        Dimension dim = messagePanel.getSize();
-                        dim.setSize(dim.getWidth() / 2, dim.getHeight());
-                        textMessage.setMaximumSize(dim);
-                        if (m.getMode() == Message.OUTBOUND_MESSAGE)
-                            textMessage.setAlignmentX(LEFT_ALIGNMENT);
-                        else
-                            textMessage.setAlignmentX(RIGHT_ALIGNMENT);
-                        messagePanel.add(textMessage);
-                        getContentPane().validate();
+                        displayTexts(c);
                     }
-
-                    setMessageScrollPaneSize(0);
-                }
             });
 
             if (contactButton.getPreferredSize().getWidth() > maxButtonWidth)
@@ -243,5 +280,27 @@ public class View extends JFrame {
         }
         messagePanel.validate();
         getContentPane().validate();
+    }
+
+    /**
+     * Displays the text messages owned by the specified contact on the message window.
+     * @param contact the contact which owns the messages that we want to view
+     */
+    private void displayTexts(Contact contact) {
+        messagePanel.removeAll();
+        messagePanel.repaint();
+        for (Message m : contact.getMessages()) {
+            TextMessagePanel textMessage = new TextMessagePanel(m);
+            Dimension dim = messagePanel.getSize();
+            dim.setSize(dim.getWidth() / 2, dim.getHeight());
+            textMessage.setMaximumSize(dim);
+            if (m.getMode() == Message.OUTBOUND_MESSAGE)
+                textMessage.setAlignmentX(LEFT_ALIGNMENT);
+            else
+                textMessage.setAlignmentX(RIGHT_ALIGNMENT);
+            messagePanel.add(textMessage);
+            getContentPane().validate();
+        }
+        setMessageScrollPaneSize(0);
     }
 }

@@ -25,13 +25,17 @@ public class Message implements Comparable<Message>{
      */
     private final int mode; // 0 if in 1 if out
     /**
-     * The name of the user that sent or received the message (the owner of the message store is nameless)
+     * The contact of the user that sent or received the message (the owner of the message store is nameless)
      */
-    private final String user;
+    private final Contact user;
     /**
      * The previous message sent to this message's user
      */
     private Message previousMessage = null;
+    /**
+     * The position of this message relative to all of the messages in a contact
+     */
+    private int messageNumber = 0;
 
     /**
      * Indicates a message is outbound and was sent TO the user specified by the user String
@@ -50,7 +54,7 @@ public class Message implements Comparable<Message>{
      * @param modeIn 0 if in, 1 if out
      * @param userIn The user's name that is associated with this text
      */
-    public Message(String textIn, Date dateIn, int modeIn, String userIn) {
+    public Message(String textIn, Date dateIn, int modeIn, Contact userIn) {
         text = textIn;
         date = dateIn;
         mode = modeIn;
@@ -81,7 +85,12 @@ public class Message implements Comparable<Message>{
     /**
      * @return the name of the user associated with this message
      */
-    public String getUser(){return user; }
+    public String getUser(){return user.getName(); }
+
+    /**
+     * @return the Contact associated with this message
+     */
+    public Contact getAssociatedContact(){return user;}
 
     /**
      * Sets the predecessor message to this one
@@ -98,6 +107,19 @@ public class Message implements Comparable<Message>{
     public Message getPreviousMessage() {
         return previousMessage;
     }
+
+    /**
+     * Sets the message number of this message.
+     * Use a setter instead of setting in the constructor because the model is not guaranteed to
+     * recognize the correct position relative to the correct contact and therefore the contact
+     * must figure this out and set accordingly.
+     */
+    public void setMessageNumber(int messageNumberIn) {messageNumber = messageNumberIn; }
+
+    /**
+     * @return The number of this message in relation to the contact that this message belongs to
+     */
+    public int getMessageNumber() {return messageNumber; }
 
     /**
      * Will allow the messages to be sorted by their date

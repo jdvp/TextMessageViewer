@@ -18,8 +18,24 @@ If you want to open another SMS file, there is no need to close
 and re-open the application. Clicking on the 'Choose SMS file'
 button and opening a new SMS file suffices.
 
+To search for occurrences of a word (or more accurately a string
+of text) in any of the messages, use the search bar located at the
+top of the interface. Simply type the phrase you are looking to
+match and click 'Search' (or hit the enter key). The messages
+that contain matches to the words will then be displayed. If you
+click the message, you will be taken to the specific conversation
+that the message was taken from and the application will automatically
+scroll to the spot that contains the searched message.
+
 NOTE:
     This program is only verified to work with the XML files
     output by the following Android applications:
         SMS Backup & Restore
         Super Backup
+
+    When searching for terms, it appears that you must click on
+    the name to redirect to the conversation that the searched
+    message came from. Further, searching can take a long amount
+    of time if a very common phrase (such as a single letter) is
+    searched or if the conversation that you are being redirected
+    to contains many messages.

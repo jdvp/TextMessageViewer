@@ -98,7 +98,7 @@ public class Model {
                 name = "(unknown)";
 
             Contact newContact = new Contact(name, number);
-            Message message = new Message(text, date, mode, name);
+            Message message = new Message(text, date, mode, newContact);
 
             boolean addMe = true;
             for(Contact contact : contacts) {
