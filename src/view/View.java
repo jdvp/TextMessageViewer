@@ -284,6 +284,7 @@ public class View extends JFrame {
 
     /**
      * Displays the text messages owned by the specified contact on the message window.
+     * 
      * @param contact the contact which owns the messages that we want to view
      */
     private void displayTexts(Contact contact) {

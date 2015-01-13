@@ -39,3 +39,5 @@ NOTE:
     of time if a very common phrase (such as a single letter) is
     searched or if the conversation that you are being redirected
     to contains many messages.
+
+    Also, the application doesn't currently display GroupChats correctly.
