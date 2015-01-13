@@ -53,10 +53,10 @@ public class Model {
     public void setMessageFile(File file) {
         contacts = new ArrayList<Contact>();
 
-        //Try to open the file
+        //Try to open the file assuming it uses UTF-8 encoding
         Scanner fileReader = null;
         try {
-            fileReader = new Scanner(file);
+            fileReader = new Scanner(file, "UTF-8");
         }
         catch (FileNotFoundException e) {
             System.err.println("ERROR: FILE NOT FOUND");
