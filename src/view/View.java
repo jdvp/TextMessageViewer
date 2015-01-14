@@ -248,7 +248,10 @@ public class View extends JFrame {
         contactPanel.add(lblContacts);
         int maxButtonWidth = 0;
         for(final Contact c: contacts) {
-            JButton contactButton = new JButton("<HTML>"+c.getName()+"<br>"+c.getNumber()+"</HTML>");
+            String displayNumber = c.getNumber();
+            if(displayNumber.length() > 14 ) //14 being a typical US number 1-xxx-xxx-xxxx, including hyphens
+                displayNumber = displayNumber.substring(0,13)+"...";
+            JButton contactButton = new JButton("<HTML>"+c.getName()+"<br>"+displayNumber+"</HTML>");
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                         displayTexts(c);

@@ -90,14 +90,15 @@ public class Contact {
     /**
      * Checks for equality between this and another Contact object.
      * For this application, it suffices to say that two contacts are
-     * the same if both their names and numbers are equivalent.
+     * the same if their numbers are the same.
+     * Since a user can be in multiple other conversations (such as a
+     * group message), including a name is unnecessary.
      *
      * @param otherContact The Contact to compare to this one
      * @return true if the other Contact is equal to this one
      */
     public boolean equals(Contact otherContact) {
-        if(name.equals(otherContact.getName())
-                && number.equals(otherContact.getNumber())){
+        if(number.equals(otherContact.getNumber())){
             return true;
         }
         return false;
