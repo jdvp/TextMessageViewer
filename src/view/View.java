@@ -1,6 +1,7 @@
 package view;
 
 import model.Contact;
+import model.LineGraph;
 import model.Message;
 
 import javax.swing.*;
@@ -71,6 +72,10 @@ public class View extends JFrame {
      * The set of contacts that was acquired by the model
      */
     private ArrayList<Contact> myContacts = null;
+    /**
+     * The currently displayed Contact
+     */
+    private Contact currentContact = null;
 
     /**
      * The constructor for a View object.
@@ -96,7 +101,7 @@ public class View extends JFrame {
      * Initializes the GUI for the system.
      */
     public void initGUI() {
-        setSize(600,500);
+        setSize(600, 500);
         setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("img/TextMessageViewerIcon.png")));
         setResizable(false);
         setTitle("Text Message Viewer");
@@ -132,7 +137,7 @@ public class View extends JFrame {
 
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
-        messagePanel.setBorder(new EmptyBorder(5,20,5,20));
+        messagePanel.setBorder(new EmptyBorder(5, 20, 5, 20));
 
         messageScrollPane.setViewportView(messagePanel);
         getContentPane().add(messageScrollPane);
@@ -223,8 +228,18 @@ public class View extends JFrame {
             }
         });
         getRootPane().setDefaultButton(search);
+        JButton graph = new JButton("Display Graph");
+        graph.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(currentContact != null){
+                    JFrame b = new LineGraph(currentContact);
+                }
+            }
+        });
         myMenu.add(searchQuery);
         myMenu.add(search);
+        myMenu.add(graph);
         myMenu.setAlignmentX(RIGHT_ALIGNMENT);
         setJMenuBar(myMenu);
     }
@@ -254,7 +269,8 @@ public class View extends JFrame {
             JButton contactButton = new JButton("<HTML>"+c.getName()+"<br>"+displayNumber+"</HTML>");
             contactButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                        displayTexts(c);
+                    currentContact = c;
+                    displayTexts(c);
                     }
             });
 

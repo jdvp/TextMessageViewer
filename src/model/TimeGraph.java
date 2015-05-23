@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * Created by JD on 5/16/2015.
  */
-public class TimeGraph extends JPanel {
-    private int[][] messageTimes = new int[14][1440];
+public class TimeGraph extends JFrame {
+    private int[][] messageTimes = new int[14][720];
     private Map<Integer, Color> colors = new HashMap<Integer, Color>();
 
     public TimeGraph(Contact contact){
@@ -38,7 +38,7 @@ public class TimeGraph extends JPanel {
         colors.put(10, new Color(0,255,0));
 
         for(int x = 0; x < 14; x++)
-            for(int y = 0; y < 1440; y++)
+            for(int y = 0; y < 720; y++)
                 messageTimes[x][y] = 0;
 
         for(Message m : contact.getMessages()){
@@ -52,16 +52,20 @@ public class TimeGraph extends JPanel {
 
             int mode = m.getMode() + 1;
 
-            messageTimes[day * mode][(hour * 60) + minute] ++;
+            minute /= 2;
+
+            messageTimes[(day * mode) - 1][(hour * 30) + minute] ++;
         }
 
         System.out.println(messageTimes);
+        setSize(994,720);
+        setVisible(true);
     }
 
     @Override
     public void paint(Graphics g){
         for(int x = 0; x < 14; x++){
-            for(int y = 0; y < 1440; y++){
+            for(int y = 0; y < 720; y++){
                 if(messageTimes[x][y] > 10)
                     messageTimes[x][y] = 10;
                 else if(messageTimes[x][y] < -10)

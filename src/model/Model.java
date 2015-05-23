@@ -19,11 +19,11 @@ public class Model {
     /**
      * The adapter used to interact with the view
      */
-    IM2VAdapter view = null;
+    private IM2VAdapter view = null;
     /**
      * The list of contacts held by the system and filled by the setMessageFile method
      */
-    ArrayList<Contact> contacts = new ArrayList<Contact>();
+    private ArrayList<Contact> contacts = new ArrayList<Contact>();
 
     /**
      * The constructor for the model
