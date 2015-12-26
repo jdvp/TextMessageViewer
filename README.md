@@ -1,3 +1,4 @@
+[![ghit.me](https://ghit.me/badge.svg?repo=jdvp/TextMessageViewer)](https://ghit.me/repo/jdvp/TextMessageViewer)
 TEXT MESSAGE VIEWER
 
 To use this application:
