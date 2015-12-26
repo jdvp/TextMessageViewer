@@ -1,5 +1,4 @@
-[![ghit.me](https://ghit.me/badge.svg?repo=jdvp/TextMessageViewer)](https://ghit.me/repo/jdvp/TextMessageViewer)
-TEXT MESSAGE VIEWER
+[![TEXT MESSAGE VIEWER](https://ghit.me/badge.svg?repo=jdvp/TextMessageViewer)](https://ghit.me/repo/jdvp/TextMessageViewer)
 
 To use this application:
 You must have a SMS store as created by an app such
