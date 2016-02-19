@@ -27,17 +27,18 @@ click the message, you will be taken to the specific conversation
 that the message was taken from and the application will automatically
 scroll to the spot that contains the searched message.
 
-NOTE:
-    This program is only verified to work with the XML files
-    output by the following Android applications:
-        SMS Backup & Restore
-        Super Backup
+NOTES:
 
-    When searching for terms, it appears that you must click on
-    the name to redirect to the conversation that the searched
-    message came from. Further, searching can take a long amount
-    of time if a very common phrase (such as a single letter) is
-    searched or if the conversation that you are being redirected
-    to contains many messages.
+This program is only verified to work with the XML files
+output by the following Android applications:
+    * SMS Backup & Restore
+    * Super Backup
 
-    Also, the application doesn't currently display GroupChats correctly.
+When searching for terms, it appears that you must click on
+the name to redirect to the conversation that the searched
+message came from. Further, searching can take a long amount
+of time if a very common phrase (such as a single letter) is
+searched or if the conversation that you are being redirected
+to contains many messages.
+
+Also, the application doesn't currently display GroupChats correctly.
