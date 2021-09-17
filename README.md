@@ -1,5 +1,3 @@
-[![TEXT MESSAGE VIEWER](https://ghit.me/badge.svg?repo=jdvp/TextMessageViewer)](https://ghit.me/repo/jdvp/TextMessageViewer)
-
 To use this application:
 You must have a SMS store as created by an app such
 as SMSBackup in XML format. Once you have run SMS backup
