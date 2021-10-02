@@ -1,31 +1,29 @@
 package me.jdvp.tmv.view
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.*
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.primarySurface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import me.jdvp.tmv.model.DisplayedMessage
+import me.jdvp.tmv.model.SimpleContact
 
 
 @Composable
 @Preview
-fun ContactList(messages: List<DisplayedMessage>, contactSelectionListener: ContactSelectionListener) {
-    val contacts = messages.map {
-        it.message.address to (it.message.contactName.emptyToNull() ?: it.message.address)
-    }.distinct().sortedBy { it.second }
+fun ContactList(contacts: List<SimpleContact>, contactSelectionListener: ContactSelectionListener) {
 
     var selectedItem by remember { mutableStateOf(-1) }
 
@@ -54,7 +52,7 @@ fun ContactList(messages: List<DisplayedMessage>, contactSelectionListener: Cont
                             selected = index == selectedItem,
                             onClick = {
                                 selectedItem = index
-                                contactSelectionListener.onContactSelected(item.first)
+                                contactSelectionListener.onContactSelected(item.address)
                             }
                         )
                 ) {
@@ -65,13 +63,13 @@ fun ContactList(messages: List<DisplayedMessage>, contactSelectionListener: Cont
                         MaterialTheme.colors.onBackground
                     }
                     Text(
-                        text = item.second,
+                        text = item.name,
                         fontWeight = FontWeight.Bold,
                         color = textColor,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                     Text(
-                        text = if (item.first == item.second) "" else item.first,
+                        text = if (item.address == item.name) "" else item.address,
                         color = textColor,
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -93,11 +91,4 @@ fun ContactList(messages: List<DisplayedMessage>, contactSelectionListener: Cont
 
 fun interface ContactSelectionListener {
     fun onContactSelected(address: String)
-}
-
-
-fun <T : CharSequence> T?.emptyToNull(): T? {
-    this ?: return null
-
-    return if (this == "") null else this
 }

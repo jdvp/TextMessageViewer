@@ -1,8 +1,10 @@
 import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,24 +12,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import me.jdvp.tmv.model.DisplayedMessage
-import me.jdvp.tmv.model.Message
-import me.jdvp.tmv.repository.SmsReader
 import me.jdvp.tmv.view.ContactList
+import me.jdvp.tmv.view.FileChooserDialog
 import me.jdvp.tmv.view.MessageWindow
-import java.awt.FileDialog
-import java.awt.Frame
-import java.io.File
+import me.jdvp.tmv.viewmodel.MessageViewModel
 
 @Composable
 @Preview
 fun app() {
+    val messageViewModel = MessageViewModel(rememberCoroutineScope())
+
     val lightColors = lightColors(
         primary = Color(0xff1b87e5),
         primaryVariant = Color(0xff005bb2),
@@ -38,18 +34,15 @@ fun app() {
     )
 
     val theme by remember { mutableStateOf(lightColors) }
+    val viewState by remember { messageViewModel.viewState }
+    var showingDialog by remember { mutableStateOf(false) }
 
     DesktopMaterialTheme(colors = theme) {
-        var showingDialog by remember { mutableStateOf(false) }
-        var showingLoader by remember { mutableStateOf(false) }
-        var smsMessages by remember { mutableStateOf<List<DisplayedMessage>?>(null) }
-        var selectedMessages by remember { mutableStateOf<List<DisplayedMessage>?>(null) }
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (showingLoader && smsMessages == null) {
+            if (viewState.isLoading) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("Loading Message Data")
                     Spacer(Modifier.height(16.dp))
@@ -57,19 +50,15 @@ fun app() {
                 }
             }
 
-
-
-            if (smsMessages != null) {
+            if (viewState.contacts.isNotEmpty()) {
                 Row {
-                    ContactList(smsMessages ?: listOf()) { selectedAddress ->
-                        selectedMessages = smsMessages?.filter {
-                            it.message.address == selectedAddress
-                        }
+                    ContactList(viewState.contacts) { selectedAddress ->
+                        messageViewModel.filterByAddress(selectedAddress)
                     }
 
-                    MessageWindow(selectedMessages ?: listOf())
+                    MessageWindow(viewState.selectedMessages)
                 }
-            } else {
+            } else if (!viewState.isLoading) {
                 Button(onClick = {
                     showingDialog = true
                 }) {
@@ -80,18 +69,13 @@ fun app() {
         }
 
         if (showingDialog) {
-            FileDialog(
+            FileChooserDialog(
                 onCloseRequest = { file ->
-                    showingLoader = true
                     showingDialog = false
 
-                    println("1st thread ${Thread.currentThread()}")
+                    file ?: return@FileChooserDialog
 
-                    GlobalScope.launch(Dispatchers.IO) {
-                        println("2st thread ${Thread.currentThread()}")
-                        smsMessages = SmsReader(file).parse()
-                        println("3st thread ${Thread.currentThread()}")
-                    }
+                    messageViewModel.loadBackupFile(file)
                 }
             )
         }
@@ -108,7 +92,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         state = state,
         title = "Text Message Viewer"
-    ){
+    ) {
         app()
 
         LaunchedEffect(state) {
@@ -122,25 +106,3 @@ fun main() = application {
         }
     }
 }
-
-
-@Composable
-private fun FileDialog(
-    parent: Frame? = null,
-    onCloseRequest: (result: File?) -> Unit
-) = AwtWindow(
-    create = {
-        object : FileDialog(parent, "Choose a file", LOAD) {
-            override fun setVisible(value: Boolean) {
-                super.setVisible(value)
-                if (value) {
-                    onCloseRequest(File(directory + file))
-                }
-            }
-        }.apply {
-            file = "*.xml"
-            setFilenameFilter { _, name -> name.endsWith(".xml") }
-        }
-    },
-    dispose = FileDialog::dispose
-)
