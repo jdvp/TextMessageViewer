@@ -52,6 +52,7 @@ class MessageViewModel(private val coroutineScope: CoroutineScope) {
             if (TimeUnit.MILLISECONDS.toMinutes(diffToPrevious) > 15) {
                 previousTimeGroup = message.userVisibleDate
             }
+
             return@groupBy previousTimeGroup
         }
 

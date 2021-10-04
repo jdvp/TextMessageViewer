@@ -26,52 +26,70 @@ import me.jdvp.tmv.model.MessageType
 @Composable
 @Preview
 fun MessageWindow(groupedMessages: Map<String, List<Message>>) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.background)
-    ) {
-        val stateVertical = rememberLazyListState(0)
-        LazyColumn(
-            state = stateVertical,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(horizontal = 16.dp)
+    Column {
+//TODO search / filter
+//        var searchText by remember { mutableStateOf("") }
+//
+//        TextField(
+//            value = searchText,
+//            onValueChange = {
+//                searchText = it
+//            },
+//            label = { Text("Search / Filter", modifier = Modifier.background(Color.Transparent)) },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.background)
         ) {
+            val stateVertical = rememberLazyListState(0)
+            LazyColumn(
+                state = stateVertical,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
 
-            groupedMessages.forEach { (timeGroup, messages) ->
-                item {
-                    Spacer(Modifier.height(8.dp))
-                }
-                item {
-                    Text(text =  timeGroup, modifier = Modifier.fillMaxWidth()
-                        .background(MaterialTheme.colors.background),
-                        textAlign = TextAlign.Center,
-                        fontSize = .75.em
-                    )
-                }
+                groupedMessages.filter {
+                    // TODO search / filter
+                    // it.value.any { message -> message.body?.contains(searchText, ignoreCase = true) ?: false }
+                    true
+                }.forEach { (timeGroup, messages) ->
+                    item {
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    item {
+                        Text(
+                            text = timeGroup, modifier = Modifier.fillMaxWidth()
+                                .background(MaterialTheme.colors.background),
+                            textAlign = TextAlign.Center,
+                            fontSize = .75.em
+                        )
+                    }
 
-                items(messages.size) { index ->
-                    val message = messages.getOrNull(index) ?: return@items
+                    items(messages.size) { index ->
+                        val message = messages.getOrNull(index) ?: return@items
 
-                    when(message.messageType) {
-                        MessageType.RECEIVED -> IncomingMessage(message)
-                        MessageType.SENT -> OutgoingMessage(message)
-                        MessageType.DRAFT -> TODO()
-                        MessageType.OUTBOX -> TODO()
-                        MessageType.FAILED -> TODO()
-                        MessageType.QUEUED -> TODO()
+                        when (message.messageType) {
+                            MessageType.RECEIVED -> IncomingMessage(message)
+                            MessageType.SENT -> OutgoingMessage(message)
+                            MessageType.DRAFT -> TODO()
+                            MessageType.OUTBOX -> TODO()
+                            MessageType.FAILED -> TODO()
+                            MessageType.QUEUED -> TODO()
+                        }
+                    }
+
+                    item {
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
-
-                item {
-                    Spacer(Modifier.height(8.dp))
-                }
             }
+            VerticalScrollbar(
+                adapter = rememberScrollbarAdapter(stateVertical),
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            )
         }
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(stateVertical),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-        )
     }
 }
 

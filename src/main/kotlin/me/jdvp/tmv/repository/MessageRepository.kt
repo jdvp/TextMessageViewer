@@ -8,7 +8,6 @@ import me.jdvp.tmv.model.MessageType
 import me.jdvp.tmv.model.SimpleContact
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import org.w3c.dom.Node
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
@@ -30,52 +29,126 @@ class MessageRepository {
         }.newDocumentBuilder()
         val doc: Document? = builder.parse(backupFile)
 
-        var child: Node? = doc?.documentElement?.firstChild
-
         val messages = mutableListOf<Message>()
         val contacts = mutableSetOf<SimpleContact>()
-        while (child != null) {
-            if (child is Element && "sms".equals(child.nodeName, ignoreCase = true)) {
 
-                val address = child.getAttribute("address").normalizedPhoneNumber()
-                val date = child.getAttribute("date")?.toLongOrNull() ?: 0
-
-                val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
-
-                val userVisibleDate = if (dateInstant.year == currentYear) {
-                    THIS_YEAR_FORMAT.format(dateInstant)
-                } else {
-                    PAST_YEAR_FORMAT.format(dateInstant)
+        doc?.documentElement?.getChildrenOfType("sms", "mms")?.forEach { child ->
+            if ("sms".equals(child.nodeName, ignoreCase = true)) {
+                parseSms(child).apply {
+                    messages.add(first)
+                    contacts.add(second)
                 }
-
-                messages.add(Message(
-                    address = address,
-                    date = date,
-                    userVisibleDate = userVisibleDate,
-                    subject = child.getAttribute("subject"),
-                    body = child.getAttribute("body"),
-                    messageType = MessageType.fromType(child.getAttribute("type")?.toIntOrNull() ?: 0)
-                ))
-
-                val name = child.getAttribute("contact_name").let { name ->
-                    if (name != "(Unknown)") name else null
+            } else if ("mms".equals(child.nodeName, ignoreCase = true)) {
+                parseMms(child).apply {
+                    messages.add(first)
+                    contacts.add(second)
                 }
-
-                contacts.add(
-                    SimpleContact(
-                        address = address,
-                        name = name ?: address
-                    )
-                )
             }
-            child = child.nextSibling
         }
 
         return BackupData(
-            messages = messages,
+            messages = messages.sortedBy { it.date },
             contacts = contacts.toList()
                 .distinct().sortedBy(SimpleContact::name)
         )
+    }
+
+    private fun parseSms(smsElement : Element): Pair<Message, SimpleContact> {
+        val address = smsElement.getAttribute("address").normalizedPhoneNumber()
+        val date = smsElement.getAttribute("date")?.toLongOrNull() ?: 0
+        val subject: String? = smsElement.getAttribute("subject")
+        val body: String? = smsElement.getAttribute("body")
+        val messageType = MessageType.fromType(smsElement.getAttribute("type")?.toIntOrNull() ?: 0)
+        val name = smsElement.getAttribute("contact_name").let { name ->
+            if (name != "(Unknown)") name else null
+        }
+
+        val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
+
+        val userVisibleDate = if (dateInstant.year == currentYear) {
+            THIS_YEAR_FORMAT.format(dateInstant)
+        } else {
+            PAST_YEAR_FORMAT.format(dateInstant)
+        }
+
+        val message = Message(
+            address = address,
+            date = date,
+            userVisibleDate = userVisibleDate,
+            subject = subject,
+            body = body,
+            messageType = messageType
+        )
+
+        val contact = SimpleContact(
+            address = address,
+            name = name ?: address
+        )
+
+        return message to contact
+    }
+
+    private fun parseMms(smsElement : Element): Pair<Message, SimpleContact> {
+        val address = smsElement.getAttribute("address").normalizedPhoneNumber()
+        val date = smsElement.getAttribute("date")?.toLongOrNull() ?: 0
+        val subject: String? = smsElement.getAttribute("sub")
+        val messageType = MessageType.fromType(smsElement.getAttribute("msg_box")?.toIntOrNull() ?: 0)
+        val name: String? = smsElement.getAttribute("contact_name").let { name ->
+            if (name != "(Unknown)") name else null
+        }
+        var body: String? = null
+
+        val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
+
+        val userVisibleDate = if (dateInstant.year == currentYear) {
+            THIS_YEAR_FORMAT.format(dateInstant)
+        } else {
+            PAST_YEAR_FORMAT.format(dateInstant)
+        }
+
+        smsElement.getChildrenOfType("parts").forEach { parts ->
+            parts.getChildrenOfType("part").forEach { part ->
+                val sequenceNumber = part.getAttribute("seq")?.toIntOrNull() ?: 0
+                if (sequenceNumber >= 0) {
+                    val contentType: String? = part.getAttribute("ct")
+
+                    if (contentType == "text/plain") {
+                        body = part.getAttribute("text")
+                        println()
+                    }
+                }
+            }
+        }
+
+        val message = Message(
+            address = address,
+            date = date,
+            userVisibleDate = userVisibleDate,
+            subject = subject,
+            body = body,
+            messageType = messageType
+        )
+
+        val contact = SimpleContact(
+            address = address,
+            name = name ?: address
+        )
+
+        return message to contact
+    }
+
+    private fun Element.getChildrenOfType(vararg types: String): List<Element> {
+        var current = firstChild
+        val matchingChildren = mutableListOf<Element>()
+
+        while (current != null) {
+            if (current.nodeName in types && current is Element) {
+                matchingChildren.add(current)
+            }
+            current = current.nextSibling
+        }
+
+        return matchingChildren
     }
 
     private fun String.normalizedPhoneNumber(): String {
