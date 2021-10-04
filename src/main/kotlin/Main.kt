@@ -1,17 +1,16 @@
-import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.material.lightColors
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.compose.ui.window.*
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowSize
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import me.jdvp.tmv.view.ContactList
@@ -37,7 +36,7 @@ fun app() {
     val viewState by remember { messageViewModel.viewState }
     var showingDialog by remember { mutableStateOf(false) }
 
-    DesktopMaterialTheme(colors = theme) {
+    MaterialTheme(colors = theme) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

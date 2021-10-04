@@ -1,5 +1,6 @@
 package me.jdvp.tmv.repository
 
+import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import me.jdvp.tmv.model.BackupData
 import me.jdvp.tmv.model.Message
@@ -10,12 +11,9 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.io.File
 import java.time.Instant
-import java.time.Year
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalField
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -84,7 +82,7 @@ class MessageRepository {
         return try {
             val number = phoneNumberUtil.parse(this, "US")
             phoneNumberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.NATIONAL)
-        } catch (ignored: Exception) {
+        } catch (ignored: NumberParseException) {
             this
         }
     }
