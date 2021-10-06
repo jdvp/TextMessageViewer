@@ -13,6 +13,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -97,6 +98,7 @@ class MessageRepository {
             if (name != "(Unknown)") name else null
         }
         var body: String? = null
+        var image: String? = null
 
         val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
 
@@ -114,7 +116,8 @@ class MessageRepository {
 
                     if (contentType == "text/plain") {
                         body = part.getAttribute("text")
-                        println()
+                    } else if (contentType?.contains("image", ignoreCase = true) == true) {
+                        image = part.getAttribute("data")
                     }
                 }
             }
@@ -126,7 +129,8 @@ class MessageRepository {
             userVisibleDate = userVisibleDate,
             subject = subject,
             body = body,
-            messageType = messageType
+            messageType = messageType,
+            encodedImage = image
         )
 
         val contact = SimpleContact(

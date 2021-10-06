@@ -24,7 +24,6 @@ import me.jdvp.tmv.model.SimpleContact
 @Composable
 @Preview
 fun ContactList(contacts: List<SimpleContact>, contactSelectionListener: ContactSelectionListener) {
-
     var selectedItem by remember { mutableStateOf(-1) }
 
     Box(
@@ -36,18 +35,18 @@ fun ContactList(contacts: List<SimpleContact>, contactSelectionListener: Contact
         val stateVertical = rememberLazyListState(0)
         LazyColumn(
             state = stateVertical,
-            modifier = Modifier.wrapContentWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             items(contacts.size) { index ->
                 val item = contacts.getOrNull(index) ?: return@items
                 Column(
                     Modifier
-                        .wrapContentWidth()
                         .background(color = if (index == selectedItem) {
                             MaterialTheme.colors.primary
                         } else {
                             Color.Transparent
                         })
+                        .fillMaxWidth()
                         .selectable(
                             selected = index == selectedItem,
                             onClick = {

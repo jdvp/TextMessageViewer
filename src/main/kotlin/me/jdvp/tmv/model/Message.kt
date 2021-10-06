@@ -6,5 +6,6 @@ data class Message(
     val userVisibleDate: String,
     val subject: String?,
     val body: String?,
-    val messageType: MessageType
+    val messageType: MessageType,
+    val encodedImage: String? = null
 )
