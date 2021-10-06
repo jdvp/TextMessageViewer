@@ -27,7 +27,9 @@ import java.util.*
 @Composable
 @Preview
 fun MessageWindow(groupedMessages: Map<String, List<Message>>) {
-    Column {
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
 //TODO search / filter
 //        var searchText by remember { mutableStateOf("") }
 //
@@ -48,7 +50,7 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>) {
             LazyColumn(
                 state = stateVertical,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth()
+                modifier = Modifier.padding(horizontal = 16.dp).matchParentSize()
             ) {
 
                 groupedMessages.filter {
@@ -73,17 +75,13 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>) {
 
                         val messageStyle = getMessageStyle(message.messageType)
 
-                        val isOutgoingMessage = message.messageType != MessageType.RECEIVED
-
-                        Row(
+                        Box(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = messageStyle.getArrangement()
+                            contentAlignment = messageStyle.getAlignment()
                         ) {
-                            if (isOutgoingMessage) {
-                                Spacer(Modifier.fillMaxWidth(fraction = .2F))
-                            }
                             Bubble(
-                                bubbleColor = messageStyle.getBubbleColor()
+                                bubbleColor = messageStyle.getBubbleColor(),
+                                contentAlignment = messageStyle.getAlignment()
                             ) {
                                 Text(
                                     text = message.body ?: "",
@@ -96,20 +94,23 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>) {
                                 )
 
                                 if (message.encodedImage != null) {
-                                    val imageBytes = Base64.getDecoder().decode(message.encodedImage)
-                                    Image(
-                                        bitmap = org.jetbrains.skija.Image.makeFromEncoded(imageBytes).asImageBitmap(),
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxWidth(.8F)
-                                    )
+                                    var imageBytes: ByteArray? = null
+                                    try {
+                                        imageBytes = Base64.getDecoder().decode(message.encodedImage)
+                                    } catch (ignored: Exception) {
+                                        Text("Failed to parse image data")
+                                    }
+
+                                    if (imageBytes != null) {
+                                        Image(
+                                            bitmap = org.jetbrains.skija.Image.makeFromEncoded(imageBytes).asImageBitmap(),
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
-
-                            if (!isOutgoingMessage) {
-                                Spacer(Modifier.fillMaxWidth(fraction = .2F))
-                            }
                         }
-
                     }
 
                     item {
@@ -130,7 +131,7 @@ private fun getMessageStyle(messageType: MessageType): MessageStyle {
     return when (messageType) {
         MessageType.RECEIVED -> object : MessageStyle {
             @Composable
-            override fun getArrangement() = Arrangement.Start
+            override fun getAlignment() = Alignment.TopStart
             @Composable
             override fun getBubbleColor() = MaterialTheme.colors.secondaryVariant
             @Composable
@@ -151,7 +152,7 @@ private fun getMessageStyle(messageType: MessageType): MessageStyle {
  */
 private interface MessageStyle {
     @Composable
-    fun getArrangement(): Arrangement.Horizontal = Arrangement.End
+    fun getAlignment(): Alignment = Alignment.TopEnd
     @Composable
     fun getBubbleColor(): Color = MaterialTheme.colors.primary
     @Composable
@@ -160,9 +161,15 @@ private interface MessageStyle {
 
 @Composable
 @Preview
-fun Bubble(bubbleColor: Color, content: @Composable ColumnScope.() -> Unit) {
-    Column(
-        modifier = Modifier.wrapContentSize().clip(RoundedCornerShape(16.dp)).background(bubbleColor),
-        content = content
-    )
+fun Bubble(
+    bubbleColor: Color,
+    contentAlignment: Alignment,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize(.8F), contentAlignment = contentAlignment) {
+        Column(
+            modifier = Modifier.wrapContentSize().clip(RoundedCornerShape(16.dp)).background(bubbleColor),
+            content = content,
+        )
+    }
 }
