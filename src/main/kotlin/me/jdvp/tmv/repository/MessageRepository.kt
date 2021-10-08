@@ -117,7 +117,7 @@ class MessageRepository {
                     if (contentType == "text/plain") {
                         body = part.getAttribute("text")
                     } else if (contentType?.contains("image", ignoreCase = true) == true) {
-                        image = part.getAttribute("data")
+                        image = part.getAttribute("data").emptyToNull()
                     }
                 }
             }
@@ -162,6 +162,13 @@ class MessageRepository {
         } catch (ignored: NumberParseException) {
             this
         }
+    }
+
+    private fun <T: CharSequence> T?.emptyToNull(): T? {
+        if (this == "") {
+            return null
+        }
+        return this
     }
 
     companion object {
