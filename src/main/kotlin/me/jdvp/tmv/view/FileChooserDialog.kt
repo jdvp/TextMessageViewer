@@ -17,6 +17,9 @@ fun FileChooserDialog(
             override fun setVisible(isVisible: Boolean) {
                 super.setVisible(isVisible)
                 if (isVisible) {
+                    if (directory.isNullOrEmpty() || file.isNullOrEmpty()) {
+                        return
+                    }
                     val resultFile = File(directory, file)
                     if (resultFile.exists()) {
                         onCloseRequest(resultFile)
