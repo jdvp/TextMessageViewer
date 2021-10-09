@@ -13,8 +13,10 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import me.jdvp.tmv.model.EmbeddedBackupFile
 import me.jdvp.tmv.view.ContactList
 import me.jdvp.tmv.view.FileChooserDialog
+import me.jdvp.tmv.view.FileSaverDialog
 import me.jdvp.tmv.view.MessageWindow
 import me.jdvp.tmv.viewmodel.MessageViewModel
 
@@ -34,7 +36,8 @@ fun app() {
 
     val theme by remember { mutableStateOf(lightColors) }
     val viewState by remember { messageViewModel.viewState }
-    var showingDialog by remember { mutableStateOf(false) }
+    var isShowingBackupChooser by remember { mutableStateOf(false) }
+    var pendingSave by remember { mutableStateOf<EmbeddedBackupFile?>(null) }
 
     MaterialTheme(colors = theme) {
         Box(
@@ -55,11 +58,13 @@ fun app() {
                         messageViewModel.filterByAddress(selectedAddress)
                     }
 
-                    MessageWindow(viewState.selectedMessages)
+                    MessageWindow(viewState.selectedMessages) { file ->
+                        pendingSave = file
+                    }
                 }
             } else if (!viewState.isLoading) {
                 Button(onClick = {
-                    showingDialog = true
+                    isShowingBackupChooser = true
                 }) {
                     Text("Load text messages")
                 }
@@ -67,14 +72,23 @@ fun app() {
             }
         }
 
-        if (showingDialog) {
+        if (isShowingBackupChooser) {
             FileChooserDialog(
                 onCloseRequest = { file ->
-                    showingDialog = false
+                    isShowingBackupChooser = false
 
                     file ?: return@FileChooserDialog
 
                     messageViewModel.loadBackupFile(file)
+                }
+            )
+        }
+
+        pendingSave?.apply {
+            FileSaverDialog(
+                embeddedBackupFile = this,
+                onCloseRequest = {
+                    pendingSave = null
                 }
             )
         }

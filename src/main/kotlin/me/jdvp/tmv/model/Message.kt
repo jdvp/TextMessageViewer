@@ -7,5 +7,5 @@ data class Message(
     val subject: String?,
     val body: String?,
     val messageType: MessageType,
-    val encodedImage: String? = null
+    val encodedImage: EmbeddedBackupFile? = null
 )

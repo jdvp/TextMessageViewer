@@ -21,6 +21,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.33")
+    implementation("commons-io:commons-io:2.6")
 }
 
 tasks.test {

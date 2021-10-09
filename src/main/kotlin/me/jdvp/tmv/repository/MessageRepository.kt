@@ -1,11 +1,9 @@
 package me.jdvp.tmv.repository
 
+import androidx.compose.material.Text
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import me.jdvp.tmv.model.BackupData
-import me.jdvp.tmv.model.Message
-import me.jdvp.tmv.model.MessageType
-import me.jdvp.tmv.model.SimpleContact
+import me.jdvp.tmv.model.*
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.io.File
@@ -98,7 +96,7 @@ class MessageRepository {
             if (name != "(Unknown)") name else null
         }
         var body: String? = null
-        var image: String? = null
+        var image: EmbeddedBackupFile? = null
 
         val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
 
@@ -117,7 +115,16 @@ class MessageRepository {
                     if (contentType == "text/plain") {
                         body = part.getAttribute("text")
                     } else if (contentType?.contains("image", ignoreCase = true) == true) {
-                        image = part.getAttribute("data").emptyToNull()
+                        try {
+                            val bytes = part.getAttribute("data").emptyToNull()
+                            val originalName = part.getAttribute("cl").emptyToNull()
+                            if (bytes != null && originalName != null) {
+                                image = EmbeddedBackupFile(
+                                    originalFileName = originalName,
+                                    bytes = Base64.getDecoder().decode(bytes).toList()
+                                )
+                            }
+                        } catch (ignored: Exception) {}
                     }
                 }
             }
