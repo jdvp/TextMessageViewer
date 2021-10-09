@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextAlign
@@ -29,6 +30,7 @@ import me.jdvp.tmv.model.MessageType
 fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionListener: DownloadActionListener) {
     Column(
         modifier = Modifier.fillMaxSize()
+            .border(width = 1.dp, color = MaterialTheme.colors.primary)
     ) {
 //TODO search / filter
 //        var searchText by remember { mutableStateOf("") }
@@ -95,7 +97,7 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
 
                                 val image = message.encodedImage
                                 if (image != null) {
-                                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
                                         var displayDownload by remember { mutableStateOf(false) }
                                         Image(
                                             bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray()).asImageBitmap(),
@@ -103,7 +105,14 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
                                             modifier = Modifier.onLongClick(
                                                 onClick = { displayDownload = false },
                                                 onLongClick = { displayDownload = !displayDownload }
-                                            )
+                                            ).drawWithCache {
+                                                onDrawWithContent {
+                                                    drawContent()
+                                                    if (displayDownload) {
+                                                        drawRect(Color(0x80000000))
+                                                    }
+                                                }
+                                            }
                                         )
                                         if (displayDownload) {
                                             Button(onClick = {

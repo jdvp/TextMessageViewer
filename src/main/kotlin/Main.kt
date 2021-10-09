@@ -59,6 +59,7 @@ fun app() {
                     }
 
                     MessageWindow(viewState.selectedMessages) { file ->
+                        pendingSave = null
                         pendingSave = file
                     }
                 }

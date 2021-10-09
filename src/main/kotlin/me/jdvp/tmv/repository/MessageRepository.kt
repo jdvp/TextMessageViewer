@@ -1,6 +1,5 @@
 package me.jdvp.tmv.repository
 
-import androidx.compose.material.Text
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import me.jdvp.tmv.model.*
@@ -172,7 +171,7 @@ class MessageRepository {
     }
 
     private fun <T: CharSequence> T?.emptyToNull(): T? {
-        if (this == "") {
+        if (this.isNullOrEmpty() || this.toString().equals("null", ignoreCase = true)) {
             return null
         }
         return this
