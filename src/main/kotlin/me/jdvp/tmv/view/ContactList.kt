@@ -1,6 +1,5 @@
 package me.jdvp.tmv.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +21,6 @@ import me.jdvp.tmv.model.SimpleContact
 
 
 @Composable
-@Preview
 fun ContactList(contacts: List<SimpleContact>, contactSelectionListener: ContactSelectionListener) {
     var selectedItem by remember { mutableStateOf(-1) }
 

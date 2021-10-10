@@ -1,6 +1,16 @@
 package me.jdvp.tmv.model
 
+import java.util.*
+
 data class EmbeddedBackupFile(
     val originalFileName: String,
-    val bytes: List<Byte>
-)
+    private val data: String
+) {
+    val byteArray: ByteArray? by lazy {
+        return@lazy try {
+            Base64.getDecoder().decode(data)
+        } catch (ignored: IllegalArgumentException) {
+            null
+        }
+    }
+}

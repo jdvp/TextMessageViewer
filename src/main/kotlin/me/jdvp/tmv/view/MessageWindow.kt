@@ -1,6 +1,5 @@
 package me.jdvp.tmv.view
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,8 +16,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import me.jdvp.tmv.model.EmbeddedBackupFile
@@ -26,7 +30,6 @@ import me.jdvp.tmv.model.Message
 import me.jdvp.tmv.model.MessageType
 
 @Composable
-@Preview
 fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionListener: DownloadActionListener) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -77,20 +80,32 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
                             horizontalAlignment = messageStyle.getHorizontalAlignment()
-                            //contentAlignment = messageStyle.getAlignment()
                         ) {
                             if (!message.body.isNullOrEmpty()) {
                                 TextBubble(
-                                    text = message.body,
+                                    body = message.body,
+                                    subject = message.subject,
                                     messageStyle = messageStyle
                                 )
                             }
 
-                            message.images.forEach { image ->
+                            message.images.filter {
+                                it.byteArray != null
+                            }.forEach { image ->
                                 ImageBubble(
                                     image = image,
+                                    messageStyle = messageStyle,
+                                    downloadActionListener = downloadActionListener
+                                )
+                            }
+
+                            message.additionalFiles.filter {
+                                it.byteArray != null
+                            }.forEach { attachment ->
+                                GenericAttachmentBubble(
+                                    attachment = attachment,
                                     messageStyle = messageStyle,
                                     downloadActionListener = downloadActionListener
                                 )
@@ -148,7 +163,6 @@ private interface MessageStyle {
 }
 
 @Composable
-@Preview
 private fun Bubble(
     bubbleColor: Color,
     contentAlignment: Alignment,
@@ -163,17 +177,32 @@ private fun Bubble(
 }
 
 @Composable
-@Preview
-private fun TextBubble(text: String, messageStyle: MessageStyle) {
+private fun TextBubble(
+    body: String,
+    subject: String? = null,
+    messageStyle: MessageStyle
+) {
     Bubble(
         bubbleColor = messageStyle.getBubbleColor(),
         contentAlignment = messageStyle.getAlignment()
     ) {
+        if (!subject.isNullOrEmpty()) {
+            Text(
+                text = "Subject: $subject",
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.body2,
+                color = messageStyle.getTextColor(),
+                fontWeight = FontWeight.Bold
+            )
+        }
         Text(
-            text = text,
+            text = body,
             modifier = Modifier
                 .wrapContentSize()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             textAlign = TextAlign.Left,
             style = MaterialTheme.typography.body2,
             color = messageStyle.getTextColor()
@@ -182,7 +211,57 @@ private fun TextBubble(text: String, messageStyle: MessageStyle) {
 }
 
 @Composable
-@Preview
+private fun GenericAttachmentBubble(
+    attachment: EmbeddedBackupFile,
+    messageStyle: MessageStyle,
+    downloadActionListener: DownloadActionListener
+) {
+    Bubble(
+        bubbleColor = messageStyle.getBubbleColor(),
+        contentAlignment = messageStyle.getAlignment()
+    ) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Min)
+                .onClickable (
+                    onClick = { downloadActionListener.onDownload(attachment) }
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Image(
+                painterResource("images/attachment.svg"),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(messageStyle.getTextColor()),
+                modifier = Modifier.fillMaxHeight()
+                    .wrapContentWidth()
+                    .padding(end = 8.dp),
+                contentScale = ContentScale.FillHeight
+            )
+            Column(Modifier.wrapContentHeight()) {
+                Text(
+                    text = attachment.originalFileName,
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(bottom = 8.dp),
+                    textAlign = TextAlign.Left,
+                    style = MaterialTheme.typography.body2,
+                    color = messageStyle.getTextColor()
+                )
+                Text(
+                    text = "Download",
+                    modifier = Modifier
+                        .wrapContentSize(),
+                    textAlign = TextAlign.Left,
+                    style = MaterialTheme.typography.body2,
+                    color = messageStyle.getTextColor(),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ImageBubble(
     image: EmbeddedBackupFile,
     messageStyle: MessageStyle,
@@ -195,10 +274,10 @@ private fun ImageBubble(
         Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
             var displayDownload by remember { mutableStateOf(false) }
             Image(
-                bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray())
+                bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.byteArray)
                     .asImageBitmap(),
                 contentDescription = null,
-                modifier = Modifier.onLongClick(
+                modifier = Modifier.onClickable(
                     onClick = { displayDownload = false },
                     onLongClick = { displayDownload = !displayDownload }
                 ).drawWithCache {
@@ -223,9 +302,9 @@ private fun ImageBubble(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-private fun Modifier.onLongClick(
-    onClick: () -> Unit = {},
-    onLongClick: () -> Unit
+private fun Modifier.onClickable(
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = onClick
 ): Modifier = composed {
     combinedClickable(
         indication = LocalIndication.current,

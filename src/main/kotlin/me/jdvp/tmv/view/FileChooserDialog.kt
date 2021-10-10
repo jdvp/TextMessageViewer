@@ -54,7 +54,9 @@ fun FileSaverDialog(
                         file += fileExtension
                     }
                     val resultFile = File(directory, file)
-                    resultFile.writeBytes(embeddedBackupFile.bytes.toByteArray())
+                    embeddedBackupFile.byteArray?.apply {
+                        resultFile.writeBytes(this)
+                    }
                     onCloseRequest(resultFile)
                 }
             }

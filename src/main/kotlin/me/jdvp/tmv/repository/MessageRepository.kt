@@ -54,10 +54,10 @@ class MessageRepository {
     private fun parseSms(smsElement : Element): Pair<Message, SimpleContact> {
         val address = smsElement.getAttribute("address").normalizedPhoneNumber()
         val date = smsElement.getAttribute("date")?.toLongOrNull() ?: 0
-        val subject: String? = smsElement.getAttribute("subject")
+        val subject: String? = smsElement.getAttribute("subject").emptyToNull()
         val body: String? = smsElement.getAttribute("body")
         val messageType = MessageType.fromType(smsElement.getAttribute("type")?.toIntOrNull() ?: 0)
-        val name = smsElement.getAttribute("contact_name").let { name ->
+        val name = smsElement.getAttribute("contact_name").emptyToNull().let { name ->
             if (name != "(Unknown)") name else null
         }
 
@@ -89,13 +89,14 @@ class MessageRepository {
     private fun parseMms(smsElement : Element): Pair<Message, SimpleContact> {
         val address = smsElement.getAttribute("address").normalizedPhoneNumber()
         val date = smsElement.getAttribute("date")?.toLongOrNull() ?: 0
-        val subject: String? = smsElement.getAttribute("sub")
+        val subject: String? = smsElement.getAttribute("sub").emptyToNull()
         val messageType = MessageType.fromType(smsElement.getAttribute("msg_box")?.toIntOrNull() ?: 0)
-        val name: String? = smsElement.getAttribute("contact_name").let { name ->
+        val name: String? = smsElement.getAttribute("contact_name").emptyToNull().let { name ->
             if (name != "(Unknown)") name else null
         }
         var body: String? = null
         val images = mutableListOf<EmbeddedBackupFile>()
+        val additionalFiles = mutableListOf<EmbeddedBackupFile>()
 
         val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
 
@@ -114,16 +115,9 @@ class MessageRepository {
                     if (contentType == "text/plain") {
                         body = part.getAttribute("text")
                     } else if (contentType?.contains("image", ignoreCase = true) == true) {
-                        try {
-                            val bytes = part.getAttribute("data").emptyToNull()
-                            val originalName = part.getAttribute("cl").emptyToNull()
-                            if (bytes != null && originalName != null) {
-                                images.add(EmbeddedBackupFile(
-                                    originalFileName = originalName,
-                                    bytes = Base64.getDecoder().decode(bytes).toList()
-                                ))
-                            }
-                        } catch (ignored: Exception) {}
+                        images.addNotNull(part.getAttachedFile())
+                    } else {
+                        additionalFiles.addNotNull(part.getAttachedFile())
                     }
                 }
             }
@@ -136,7 +130,8 @@ class MessageRepository {
             subject = subject,
             body = body,
             messageType = messageType,
-            images = images
+            images = images,
+            additionalFiles = additionalFiles
         )
 
         val contact = SimpleContact(
@@ -161,6 +156,18 @@ class MessageRepository {
         return matchingChildren
     }
 
+    private fun Element.getAttachedFile(): EmbeddedBackupFile? {
+        val bytes = getAttribute("data").emptyToNull()
+        val originalName = getAttribute("cl").emptyToNull()
+        if (bytes != null && originalName != null) {
+            return EmbeddedBackupFile(
+                originalFileName = originalName,
+                data = bytes
+            )
+        }
+        return null
+    }
+
     private fun String.normalizedPhoneNumber(): String {
         return try {
             val number = phoneNumberUtil.parse(this, "US")
@@ -175,6 +182,12 @@ class MessageRepository {
             return null
         }
         return this
+    }
+
+    private fun <T> MutableList<T>.addNotNull(item: T?) {
+        if (item != null) {
+            add(item)
+        }
     }
 
     companion object {
