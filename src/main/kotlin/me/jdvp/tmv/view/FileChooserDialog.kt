@@ -18,7 +18,7 @@ fun FileChooserDialog(
                 super.setVisible(isVisible)
                 if (isVisible) {
                     if (directory.isNullOrEmpty() || file.isNullOrEmpty()) {
-                        return
+                        return onCloseRequest(null)
                     }
                     val resultFile = File(directory, file)
                     if (resultFile.exists()) {
@@ -46,15 +46,16 @@ fun FileSaverDialog(
             override fun setVisible(isVisible: Boolean) {
                 super.setVisible(isVisible)
                 if (isVisible) {
-                    if (!directory.isNullOrEmpty() && !file.isNullOrEmpty()) {
-                        val fileExtension = ".${FilenameUtils.getExtension(embeddedBackupFile.originalFileName)}"
-                        if (!file.endsWith(fileExtension)) {
-                            file += fileExtension
-                        }
-                        val resultFile = File(directory, file)
-                        resultFile.writeBytes(embeddedBackupFile.bytes.toByteArray())
-                        onCloseRequest(resultFile)
+                    if (directory.isNullOrEmpty() || file.isNullOrEmpty()) {
+                        return onCloseRequest(null)
                     }
+                    val fileExtension = ".${FilenameUtils.getExtension(embeddedBackupFile.originalFileName)}"
+                    if (!file.endsWith(fileExtension)) {
+                        file += fileExtension
+                    }
+                    val resultFile = File(directory, file)
+                    resultFile.writeBytes(embeddedBackupFile.bytes.toByteArray())
+                    onCloseRequest(resultFile)
                 }
             }
         }.apply {

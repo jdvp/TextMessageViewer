@@ -12,10 +12,13 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-class MessageViewModel(private val coroutineScope: CoroutineScope) {
+class MessageViewModel(
+    private val messageRepository: MessageRepository,
+    private val coroutineScope: CoroutineScope
+) {
     private var backupData = BackupData(listOf(), listOf())
 
-    var viewState = mutableStateOf(
+    val viewState = mutableStateOf(
         ViewState(
             contacts = listOf(),
             selectedMessages = mapOf(),
@@ -24,10 +27,13 @@ class MessageViewModel(private val coroutineScope: CoroutineScope) {
     )
 
     fun loadBackupFile(backupFile: File) = coroutineScope.launch(Dispatchers.IO) {
-        viewState.value = viewState.value.copy(
+        backupData = BackupData(listOf(), listOf())
+        viewState.value = ViewState(
+            contacts = listOf(),
+            selectedMessages = mapOf(),
             isLoading = true
         )
-        backupData = MessageRepository().parseBackupData(backupFile) //todo DI
+        backupData = messageRepository.parseBackupData(backupFile) //todo DI
         viewState.value = ViewState(
             contacts = backupData.contacts,
             selectedMessages = mapOf(),

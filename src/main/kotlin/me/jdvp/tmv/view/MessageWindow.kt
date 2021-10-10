@@ -65,9 +65,9 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
                     }
                     item {
                         Text(
-                            text = timeGroup, modifier = Modifier.fillMaxWidth()
-                                .background(MaterialTheme.colors.background),
+                            text = timeGroup, modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
+                            color = MaterialTheme.colors.onBackground,
                             fontSize = .75.em
                         )
                     }
