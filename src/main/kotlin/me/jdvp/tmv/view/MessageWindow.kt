@@ -51,8 +51,9 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
             val stateVertical = rememberLazyListState(0)
             LazyColumn(
                 state = stateVertical,
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp).matchParentSize()
+                modifier = Modifier.matchParentSize()
             ) {
 
                 groupedMessages.filter {
@@ -60,9 +61,6 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
                     // it.value.any { message -> message.body?.contains(searchText, ignoreCase = true) ?: false }
                     true
                 }.forEach { (timeGroup, messages) ->
-                    item {
-                        Spacer(Modifier.height(8.dp))
-                    }
                     item {
                         Text(
                             text = timeGroup, modifier = Modifier.fillMaxWidth(),
@@ -84,61 +82,20 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
                             //contentAlignment = messageStyle.getAlignment()
                         ) {
                             if (!message.body.isNullOrEmpty()) {
-                                Bubble(
-                                    bubbleColor = messageStyle.getBubbleColor(),
-                                    contentAlignment = messageStyle.getAlignment()
-                                ) {
-                                    Text(
-                                        text = message.body,
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                            .padding(horizontal = 16.dp, vertical = 10.dp),
-                                        textAlign = TextAlign.Left,
-                                        style = MaterialTheme.typography.body2,
-                                        color = messageStyle.getTextColor()
-                                    )
-                                }
+                                TextBubble(
+                                    text = message.body,
+                                    messageStyle = messageStyle
+                                )
                             }
 
                             message.images.forEach { image ->
-                                Bubble(
-                                    bubbleColor = messageStyle.getBubbleColor(),
-                                    contentAlignment = messageStyle.getAlignment()
-                                ) {
-                                    Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
-                                        var displayDownload by remember { mutableStateOf(false) }
-                                        Image(
-                                            bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray())
-                                                .asImageBitmap(),
-                                            contentDescription = null,
-                                            modifier = Modifier.onLongClick(
-                                                onClick = { displayDownload = false },
-                                                onLongClick = { displayDownload = !displayDownload }
-                                            ).drawWithCache {
-                                                onDrawWithContent {
-                                                    drawContent()
-                                                    if (displayDownload) {
-                                                        drawRect(Color(0x80000000))
-                                                    }
-                                                }
-                                            }
-                                        )
-                                        if (displayDownload) {
-                                            Button(onClick = {
-                                                downloadActionListener.onDownload(image)
-                                                displayDownload = false
-                                            }) {
-                                                Text("Download")
-                                            }
-                                        }
-                                    }
-                                }
+                                ImageBubble(
+                                    image = image,
+                                    messageStyle = messageStyle,
+                                    downloadActionListener = downloadActionListener
+                                )
                             }
                         }
-                    }
-
-                    item {
-                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
@@ -205,6 +162,66 @@ private fun Bubble(
     }
 }
 
+@Composable
+@Preview
+private fun TextBubble(text: String, messageStyle: MessageStyle) {
+    Bubble(
+        bubbleColor = messageStyle.getBubbleColor(),
+        contentAlignment = messageStyle.getAlignment()
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            textAlign = TextAlign.Left,
+            style = MaterialTheme.typography.body2,
+            color = messageStyle.getTextColor()
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun ImageBubble(
+    image: EmbeddedBackupFile,
+    messageStyle: MessageStyle,
+    downloadActionListener: DownloadActionListener
+) {
+    Bubble(
+        bubbleColor = messageStyle.getBubbleColor(),
+        contentAlignment = messageStyle.getAlignment()
+    ) {
+        Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
+            var displayDownload by remember { mutableStateOf(false) }
+            Image(
+                bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray())
+                    .asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.onLongClick(
+                    onClick = { displayDownload = false },
+                    onLongClick = { displayDownload = !displayDownload }
+                ).drawWithCache {
+                    onDrawWithContent {
+                        drawContent()
+                        if (displayDownload) {
+                            drawRect(Color(0x80000000))
+                        }
+                    }
+                }
+            )
+            if (displayDownload) {
+                Button(onClick = {
+                    downloadActionListener.onDownload(image)
+                    displayDownload = false
+                }) {
+                    Text("Download")
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 private fun Modifier.onLongClick(
     onClick: () -> Unit = {},
@@ -217,7 +234,6 @@ private fun Modifier.onLongClick(
         onClick = onClick
     )
 }
-
 
 fun interface DownloadActionListener {
     fun onDownload(embeddedBackupFile: EmbeddedBackupFile)
