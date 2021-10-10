@@ -77,30 +77,39 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
 
                         val messageStyle = getMessageStyle(message.messageType)
 
-                        Box(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = messageStyle.getAlignment()
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = messageStyle.getHorizontalAlignment()
+                            //contentAlignment = messageStyle.getAlignment()
                         ) {
-                            Bubble(
-                                bubbleColor = messageStyle.getBubbleColor(),
-                                contentAlignment = messageStyle.getAlignment()
-                            ) {
-                                Text(
-                                    text = message.body ?: "",
-                                    modifier = Modifier
-                                        .wrapContentSize()
-                                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                                    textAlign = TextAlign.Left,
-                                    style = MaterialTheme.typography.body2,
-                                    color = messageStyle.getTextColor()
-                                )
+                            if (!message.body.isNullOrEmpty()) {
+                                Bubble(
+                                    bubbleColor = messageStyle.getBubbleColor(),
+                                    contentAlignment = messageStyle.getAlignment()
+                                ) {
+                                    Text(
+                                        text = message.body,
+                                        modifier = Modifier
+                                            .wrapContentSize()
+                                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                                        textAlign = TextAlign.Left,
+                                        style = MaterialTheme.typography.body2,
+                                        color = messageStyle.getTextColor()
+                                    )
+                                }
+                            }
 
-                                val image = message.encodedImage
-                                if (image != null) {
+                            message.images.forEach { image ->
+                                Bubble(
+                                    bubbleColor = messageStyle.getBubbleColor(),
+                                    contentAlignment = messageStyle.getAlignment()
+                                ) {
                                     Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
                                         var displayDownload by remember { mutableStateOf(false) }
                                         Image(
-                                            bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray()).asImageBitmap(),
+                                            bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.bytes.toByteArray())
+                                                .asImageBitmap(),
                                             contentDescription = null,
                                             modifier = Modifier.onLongClick(
                                                 onClick = { displayDownload = false },
@@ -148,6 +157,8 @@ private fun getMessageStyle(messageType: MessageType): MessageStyle {
             @Composable
             override fun getAlignment() = Alignment.TopStart
             @Composable
+            override fun getHorizontalAlignment(): Alignment.Horizontal = Alignment.Start
+            @Composable
             override fun getBubbleColor() = MaterialTheme.colors.secondaryVariant
             @Composable
             override fun getTextColor() = MaterialTheme.colors.onPrimary
@@ -171,6 +182,8 @@ private fun getMessageStyle(messageType: MessageType): MessageStyle {
 private interface MessageStyle {
     @Composable
     fun getAlignment(): Alignment = Alignment.TopEnd
+    @Composable
+    fun getHorizontalAlignment(): Alignment.Horizontal = Alignment.End
     @Composable
     fun getBubbleColor(): Color = MaterialTheme.colors.primary
     @Composable

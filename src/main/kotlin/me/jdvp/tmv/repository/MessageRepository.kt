@@ -95,7 +95,7 @@ class MessageRepository {
             if (name != "(Unknown)") name else null
         }
         var body: String? = null
-        var image: EmbeddedBackupFile? = null
+        val images = mutableListOf<EmbeddedBackupFile>()
 
         val dateInstant = Instant.ofEpochMilli(date).atZone(TIME_ZONE)
 
@@ -118,10 +118,10 @@ class MessageRepository {
                             val bytes = part.getAttribute("data").emptyToNull()
                             val originalName = part.getAttribute("cl").emptyToNull()
                             if (bytes != null && originalName != null) {
-                                image = EmbeddedBackupFile(
+                                images.add(EmbeddedBackupFile(
                                     originalFileName = originalName,
                                     bytes = Base64.getDecoder().decode(bytes).toList()
-                                )
+                                ))
                             }
                         } catch (ignored: Exception) {}
                     }
@@ -136,7 +136,7 @@ class MessageRepository {
             subject = subject,
             body = body,
             messageType = messageType,
-            encodedImage = image
+            images = images
         )
 
         val contact = SimpleContact(
