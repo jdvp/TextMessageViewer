@@ -124,20 +124,39 @@ fun main() = application {
 
         MenuBar {
             Menu("File") {
-                Item("Open backup file", onClick = { isShowingBackupChooser = true })
-                Item("Toggle dark mode", onClick = { preferenceViewModel.toggleTheme() })
+                Item(
+                    text = "Open backup file",
+                    onClick = { isShowingBackupChooser = true },
+                    shortcut = KeyShortcut(key = Key(KeyEvent.VK_O), meta = true)
+                )
+                Item(
+                    text = "Toggle dark mode",
+                    onClick = { preferenceViewModel.toggleTheme() },
+                    shortcut = KeyShortcut(key = Key(KeyEvent.VK_D), meta = true)
+                )
             }
 
             if (viewState.selectedMessages.isNotEmpty()) {
                 Menu("Find") {
-                    Item(if (conversationSearchEnabled) {
-                        "Close conversation search"
-                    } else {
-                        "Search in conversation"
-                    }, onClick = { conversationSearchEnabled = !conversationSearchEnabled },
-                    shortcut = KeyShortcut(key = Key(KeyEvent.VK_F), meta = true))
-                    Item("Search in all conversations", onClick = { })
-                    Item("Filter contacts", onClick = { })
+                    Item(
+                        text = if (conversationSearchEnabled) {
+                            "Close conversation search"
+                        } else {
+                            "Search in conversation"
+                        },
+                        onClick = { conversationSearchEnabled = !conversationSearchEnabled },
+                        shortcut = KeyShortcut(key = Key(KeyEvent.VK_F), meta = true)
+                    )
+                    Item(
+                        text = "Search in all conversations",
+                        onClick = { },
+                        shortcut = KeyShortcut(key = Key(KeyEvent.VK_F), meta = true, shift = true)
+                    )
+                    Item(
+                        text = "Filter contacts",
+                        onClick = { },
+                        shortcut = KeyShortcut(key = Key(KeyEvent.VK_C), meta = true)
+                    )
                 }
             }
         }
