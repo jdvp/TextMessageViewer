@@ -1,14 +1,13 @@
 package me.jdvp.tmv.view
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,6 +17,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,24 +28,27 @@ import androidx.compose.ui.unit.em
 import me.jdvp.tmv.model.EmbeddedBackupFile
 import me.jdvp.tmv.model.Message
 import me.jdvp.tmv.model.MessageType
+import org.jetbrains.skia.Image.Companion.makeFromEncoded
 
 @Composable
-fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionListener: DownloadActionListener) {
+fun MessageWindow(
+    groupedMessages: Map<String, List<Message>>,
+    showSearchFilter : Boolean,
+    downloadActionListener: DownloadActionListener
+) {
     Column(
         modifier = Modifier.fillMaxSize()
             .border(width = 1.dp, color = MaterialTheme.colors.primary)
     ) {
-//TODO search / filter
-//        var searchText by remember { mutableStateOf("") }
-//
-//        TextField(
-//            value = searchText,
-//            onValueChange = {
-//                searchText = it
-//            },
-//            label = { Text("Search / Filter", modifier = Modifier.background(Color.Transparent)) },
-//            modifier = Modifier.fillMaxWidth()
-//        )
+        var searchText by remember { mutableStateOf("") }
+
+        if (showSearchFilter) {
+            SearchField(searchText) { updatedSearchTerm ->
+                searchText = updatedSearchTerm
+            }
+        } else {
+            searchText = ""
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -60,10 +63,9 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
             ) {
 
                 groupedMessages.filter {
-                    // TODO search / filter
-                    // it.value.any { message -> message.body?.contains(searchText, ignoreCase = true) ?: false }
-                    true
+                     it.value.any { message -> message.containsSearchTerm(searchText) }
                 }.forEach { (timeGroup, messages) ->
+                    val filteredMessages = messages.filter { it.containsSearchTerm(searchText) }
                     item {
                         Text(
                             text = timeGroup, modifier = Modifier.fillMaxWidth(),
@@ -73,8 +75,8 @@ fun MessageWindow(groupedMessages: Map<String, List<Message>>, downloadActionLis
                         )
                     }
 
-                    items(messages.size) { index ->
-                        val message = messages.getOrNull(index) ?: return@items
+                    items(filteredMessages.size) { index ->
+                        val message = filteredMessages.getOrNull(index) ?: return@items
 
                         val messageStyle = getMessageStyle(message.messageType)
 
@@ -262,6 +264,57 @@ private fun GenericAttachmentBubble(
 }
 
 @Composable
+private fun SearchField(searchText: String, action: (String) -> Unit) {
+    TextField(
+        value = searchText,
+        onValueChange = action,
+        label = { Text("Search / Filter", modifier = Modifier.background(Color.Transparent)) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        colors = object: TextFieldColors {
+            @Composable
+            override fun backgroundColor(enabled: Boolean) =
+                mutableStateOf(MaterialTheme.colors.background)
+
+            @Composable
+            override fun cursorColor(isError: Boolean) =
+                mutableStateOf(MaterialTheme.colors.primary)
+
+            @Composable
+            override fun indicatorColor(
+                enabled: Boolean,
+                isError: Boolean,
+                interactionSource: InteractionSource
+            ) = mutableStateOf(MaterialTheme.colors.primary)
+
+            @Composable
+            override fun labelColor(
+                enabled: Boolean,
+                error: Boolean,
+                interactionSource: InteractionSource
+            ) = mutableStateOf(MaterialTheme.colors.primary)
+
+            @Composable
+            override fun leadingIconColor(enabled: Boolean, isError: Boolean) =
+                mutableStateOf(MaterialTheme.colors.primary)
+
+            @Composable
+            override fun placeholderColor(enabled: Boolean) =
+                mutableStateOf(MaterialTheme.colors.onBackground)
+
+            @Composable
+            override fun textColor(enabled: Boolean) =
+                mutableStateOf(MaterialTheme.colors.onBackground)
+
+            @Composable
+            override fun trailingIconColor(enabled: Boolean, isError: Boolean) =
+                mutableStateOf(MaterialTheme.colors.primary)
+
+        }
+    )
+}
+
+@Composable
 private fun ImageBubble(
     image: EmbeddedBackupFile,
     messageStyle: MessageStyle,
@@ -274,8 +327,7 @@ private fun ImageBubble(
         Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
             var displayDownload by remember { mutableStateOf(false) }
             Image(
-                bitmap = org.jetbrains.skija.Image.makeFromEncoded(image.byteArray)
-                    .asImageBitmap(),
+                bitmap = makeFromEncoded(image.byteArray).toComposeImageBitmap(),
                 contentDescription = null,
                 modifier = Modifier.onClickable(
                     onClick = { displayDownload = false },

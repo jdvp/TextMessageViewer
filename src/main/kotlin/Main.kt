@@ -8,6 +8,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.window.*
@@ -21,6 +23,7 @@ import me.jdvp.tmv.view.FileSaverDialog
 import me.jdvp.tmv.view.MessageWindow
 import me.jdvp.tmv.viewmodel.MessageViewModel
 import me.jdvp.tmv.viewmodel.PreferenceViewModel
+import java.awt.event.KeyEvent
 import java.util.prefs.Preferences
 
 fun main() = application {
@@ -47,6 +50,7 @@ fun main() = application {
         val colors by remember { preferenceViewModel.colors }
         var isShowingBackupChooser by remember { mutableStateOf(false) }
         var pendingSave by remember { mutableStateOf<EmbeddedBackupFile?>(null) }
+        var conversationSearchEnabled by remember { mutableStateOf(false) }
 
         MaterialTheme(colors = colors) {
             Box(
@@ -71,7 +75,7 @@ fun main() = application {
                             messageViewModel.filterByAddress(selectedAddress)
                         }
 
-                        MessageWindow(viewState.selectedMessages) { file ->
+                        MessageWindow(viewState.selectedMessages, conversationSearchEnabled) { file ->
                             pendingSave = null
                             pendingSave = file
                         }
@@ -122,6 +126,19 @@ fun main() = application {
             Menu("File") {
                 Item("Open backup file", onClick = { isShowingBackupChooser = true })
                 Item("Toggle dark mode", onClick = { preferenceViewModel.toggleTheme() })
+            }
+
+            if (viewState.selectedMessages.isNotEmpty()) {
+                Menu("Find") {
+                    Item(if (conversationSearchEnabled) {
+                        "Close conversation search"
+                    } else {
+                        "Search in conversation"
+                    }, onClick = { conversationSearchEnabled = !conversationSearchEnabled },
+                    shortcut = KeyShortcut(key = Key(KeyEvent.VK_F), meta = true))
+                    Item("Search in all conversations", onClick = { })
+                    Item("Filter contacts", onClick = { })
+                }
             }
         }
     }

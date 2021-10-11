@@ -10,7 +10,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 
 
@@ -20,6 +19,8 @@ class MessageRepository {
 
     fun parseBackupData(backupFile: File?): BackupData {
         backupFile ?: return BackupData(listOf(), listOf())
+
+        val start = System.currentTimeMillis()
 
         val builder = DocumentBuilderFactory.newInstance().apply {
             isValidating = false
@@ -48,7 +49,11 @@ class MessageRepository {
             messages = messages.sortedBy { it.date },
             contacts = contacts.toList()
                 .distinct().sortedBy(SimpleContact::name)
-        )
+        ).apply {
+            val end = System.currentTimeMillis()
+
+            println("Loading took ${end - start} millis")
+        }
     }
 
     private fun parseSms(smsElement : Element): Pair<Message, SimpleContact> {
