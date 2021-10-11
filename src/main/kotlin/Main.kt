@@ -25,7 +25,8 @@ import java.util.prefs.Preferences
 
 fun main() = application {
     val state = rememberWindowState(
-        size = WindowSize(800.dp, 600.dp)
+        width = 800.dp,
+        height = 600.dp
     )
 
     val messageViewModel = MessageViewModel(
