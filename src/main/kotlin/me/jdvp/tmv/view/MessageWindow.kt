@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,9 +21,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import me.jdvp.tmv.model.EmbeddedBackupFile
@@ -89,6 +94,7 @@ fun MessageWindow(
                                 TextBubble(
                                     body = message.body,
                                     subject = message.subject,
+                                    searchText = searchText,
                                     messageStyle = messageStyle
                                 )
                             }
@@ -182,6 +188,7 @@ private fun Bubble(
 private fun TextBubble(
     body: String,
     subject: String? = null,
+    searchText: String? = null,
     messageStyle: MessageStyle
 ) {
     Bubble(
@@ -189,26 +196,74 @@ private fun TextBubble(
         contentAlignment = messageStyle.getAlignment()
     ) {
         if (!subject.isNullOrEmpty()) {
+            SelectionContainer {
+                Text(
+                    text = buildAnnotatedString {
+                        append("Subject: ")
+                    }.plus(buildAnnotatedSearchText(
+                        text = subject,
+                        searchText = searchText,
+                        messageStyle = messageStyle
+                    )),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                    textAlign = TextAlign.Left,
+                    style = MaterialTheme.typography.body2,
+                    color = messageStyle.getTextColor(),
+                    fontWeight = FontWeight.Bold)
+            }
+        }
+        SelectionContainer {
             Text(
-                text = "Subject: $subject",
+                text = buildAnnotatedSearchText(
+                    text = body,
+                    searchText = searchText,
+                    messageStyle = messageStyle
+                ),
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 textAlign = TextAlign.Left,
                 style = MaterialTheme.typography.body2,
-                color = messageStyle.getTextColor(),
-                fontWeight = FontWeight.Bold
+                color = messageStyle.getTextColor()
             )
         }
-        Text(
-            text = body,
-            modifier = Modifier
-                .wrapContentSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            textAlign = TextAlign.Left,
-            style = MaterialTheme.typography.body2,
-            color = messageStyle.getTextColor()
-        )
+    }
+}
+
+@Composable
+private fun buildAnnotatedSearchText(
+    text: String,
+    searchText: String? = null,
+    messageStyle: MessageStyle
+): AnnotatedString {
+    return buildAnnotatedString {
+        if (searchText.isNullOrEmpty() || !text.contains(searchText, ignoreCase = true)) {
+            append(text)
+        } else {
+            var boldIndices = 0
+            text.forEachIndexed { index, c ->
+                if (text.startsWith(
+                        searchText,
+                        ignoreCase = true,
+                        startIndex = index
+                    )) {
+                    boldIndices = searchText.length
+                }
+                if (boldIndices > 0) {
+                    withStyle(SpanStyle(
+                        background = messageStyle.getTextColor(),
+                        color = messageStyle.getBubbleColor()
+                    )) {
+                        append(c)
+                    }
+                    boldIndices--
+                } else {
+                    append(c)
+                }
+            }
+        }
     }
 }
 

@@ -1,5 +1,6 @@
+package me.jdvp.tmv.view
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
@@ -12,37 +13,31 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.compose.ui.window.*
+import androidx.compose.ui.window.ApplicationScope
+import androidx.compose.ui.window.MenuBar
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import me.jdvp.tmv.model.EmbeddedBackupFile
-import me.jdvp.tmv.repository.MessageRepository
-import me.jdvp.tmv.view.ContactList
-import me.jdvp.tmv.view.FileChooserDialog
-import me.jdvp.tmv.view.FileSaverDialog
-import me.jdvp.tmv.view.MessageWindow
 import me.jdvp.tmv.viewmodel.MessageViewModel
 import me.jdvp.tmv.viewmodel.PreferenceViewModel
 import java.awt.event.KeyEvent
-import java.util.prefs.Preferences
 
-fun main() = application {
+
+@Composable
+fun mainWindow(
+    applicationScope: ApplicationScope,
+    messageViewModel: MessageViewModel,
+    preferenceViewModel: PreferenceViewModel
+) {
     val state = rememberWindowState(
         width = 800.dp,
         height = 600.dp
     )
 
-    val messageViewModel = MessageViewModel(
-        messageRepository = MessageRepository(),
-        coroutineScope = rememberCoroutineScope()
-    )
-    val preferenceViewModel = PreferenceViewModel(
-        preferences = Preferences.userNodeForPackage(this.javaClass),
-        isSystemDarkMode = isSystemInDarkTheme()
-    )
-
     Window(
-        onCloseRequest = ::exitApplication,
+        onCloseRequest = applicationScope::exitApplication,
         state = state,
         title = "Text Message Viewer"
     ) {
