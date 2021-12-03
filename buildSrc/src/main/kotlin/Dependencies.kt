@@ -9,7 +9,7 @@ object Plugins {
     const val KOTLIN_JVM = "org.jetbrains.kotlin.jvm"
     const val KOTLIN_JVM_VERSION = Versions.KOTLIN_VERSION
     const val COMPOSE = "org.jetbrains.compose"
-    const val COMPOSE_VERSION = "1.0.0-alpha4-build396"
+    const val COMPOSE_VERSION = "1.0.0"
 }
 
 object Dependencies {
