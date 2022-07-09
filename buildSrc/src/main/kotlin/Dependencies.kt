@@ -1,5 +1,5 @@
 private object Versions {
-    const val KOTLIN_VERSION = "1.5.31"
+    const val KOTLIN_VERSION = "1.6.10"
     const val COROUTINES_VERSION = "1.5.2"
     const val LIB_PHONE_NUMBER_VERSION = "8.12.33"
     const val COMMONS_IO_VERSION = "2.6"
@@ -9,7 +9,7 @@ object Plugins {
     const val KOTLIN_JVM = "org.jetbrains.kotlin.jvm"
     const val KOTLIN_JVM_VERSION = Versions.KOTLIN_VERSION
     const val COMPOSE = "org.jetbrains.compose"
-    const val COMPOSE_VERSION = "1.0.0"
+    const val COMPOSE_VERSION = "1.1.1"
 }
 
 object Dependencies {
