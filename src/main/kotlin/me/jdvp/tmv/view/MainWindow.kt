@@ -13,10 +13,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
-import androidx.compose.ui.window.ApplicationScope
-import androidx.compose.ui.window.MenuBar
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.ui.window.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import me.jdvp.tmv.model.EmbeddedBackupFile
@@ -29,11 +26,13 @@ import java.awt.event.KeyEvent
 fun mainWindow(
     applicationScope: ApplicationScope,
     messageViewModel: MessageViewModel,
-    preferenceViewModel: PreferenceViewModel
+    preferenceViewModel: PreferenceViewModel,
+    mainWindowActionListener: MainWindowActionListener
 ) {
     val state = rememberWindowState(
         width = 800.dp,
-        height = 600.dp
+        height = 600.dp,
+        position = WindowPosition(Alignment.TopStart)
     )
 
     Window(
@@ -144,7 +143,7 @@ fun mainWindow(
                     )
                     Item(
                         text = "Search in all conversations",
-                        onClick = { },
+                        onClick = { mainWindowActionListener.onSearchOpened() },
                         shortcut = KeyShortcut(key = Key(KeyEvent.VK_F), meta = true, shift = true)
                     )
                     Item(
@@ -156,4 +155,8 @@ fun mainWindow(
             }
         }
     }
+}
+
+interface MainWindowActionListener {
+    fun onSearchOpened()
 }

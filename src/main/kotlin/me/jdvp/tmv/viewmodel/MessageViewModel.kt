@@ -34,6 +34,7 @@ class MessageViewModel(
             isLoading = true
         )
         backupData = messageRepository.parseBackupData(backupFile) //todo DI
+        MOST_RECENT_BACKUP_MESSAGES.value = backupData.messages
         viewState.value = ViewState(
             contacts = backupData.contacts,
             selectedMessages = mapOf(),
@@ -72,4 +73,9 @@ class MessageViewModel(
         val selectedMessages: Map<String, List<Message>>,
         val isLoading: Boolean
     )
+
+    companion object {
+        @JvmStatic
+        var MOST_RECENT_BACKUP_MESSAGES = mutableStateOf<List<Message>>(listOf())
+    }
 }
